@@ -26,6 +26,9 @@ classifiers = [
 # Zero runtime dependencies — stdlib only
 dependencies = []
 
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
 [project.scripts]
 agent-scan = "agent_readiness.cli:main"
 
