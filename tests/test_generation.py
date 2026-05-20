@@ -5,6 +5,7 @@ Uses tmp_path to create isolated test repos. No network. No LLM.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
@@ -206,3 +207,79 @@ class TestMarkdownReportGeneration:
         assert "tier" in data
         assert "checks" in data
         assert len(data["checks"]) == 12
+
+
+# ---------------------------------------------------------------------------
+# --no-color and NO_COLOR support
+# ---------------------------------------------------------------------------
+
+class TestNoColorFlag:
+    def test_no_color_removes_ansi_codes(self, tmp_path: Path) -> None:
+        from agent_readiness.checks import run_all_checks
+        from agent_readiness.report import render_terminal
+
+        results = run_all_checks(tmp_path)
+        output = render_terminal(results, str(tmp_path), color=False)
+        assert "\033[" not in output, "ANSI escape codes found in --no-color output"
+
+    def test_color_true_includes_ansi_codes(self, tmp_path: Path) -> None:
+        from agent_readiness.checks import run_all_checks
+        from agent_readiness.report import render_terminal
+
+        results = run_all_checks(tmp_path)
+        output = render_terminal(results, str(tmp_path), color=True)
+        assert "\033[" in output, "No ANSI escape codes found in color output"
+
+    def test_cli_no_color_flag(self, tmp_path: Path) -> None:
+        """CLI --no-color flag produces clean output."""
+        import subprocess, sys
+        result = subprocess.run(
+            [sys.executable, "-m", "agent_readiness.cli", str(tmp_path), "--no-color"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        assert result.returncode == 0
+        assert "\033[" not in result.stdout
+
+    def test_no_color_env_var(self, tmp_path: Path) -> None:
+        """NO_COLOR environment variable suppresses ANSI output."""
+        import subprocess, sys
+        env = os.environ.copy()
+        env["NO_COLOR"] = "1"
+        result = subprocess.run(
+            [sys.executable, "-m", "agent_readiness.cli", str(tmp_path)],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            env=env,
+        )
+        assert result.returncode == 0
+        assert "\033[" not in result.stdout
+
+
+# ---------------------------------------------------------------------------
+# --version flag
+# ---------------------------------------------------------------------------
+
+class TestVersionFlag:
+    def test_version_flag_exits_zero(self) -> None:
+        import subprocess, sys
+        result = subprocess.run(
+            [sys.executable, "-m", "agent_readiness.cli", "--version"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        assert result.returncode == 0
+
+    def test_version_flag_contains_version_string(self) -> None:
+        import subprocess, sys
+        from agent_readiness import __version__
+        result = subprocess.run(
+            [sys.executable, "-m", "agent_readiness.cli", "--version"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        assert __version__ in result.stdout or __version__ in result.stderr

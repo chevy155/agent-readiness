@@ -40,8 +40,11 @@ _STATUS_MD: dict[str, str] = {
 _SEP = "─" * 62
 
 
-def _c(text: str, color: str) -> str:
-    return f"{color}{text}{RESET}"
+def _c(text: str, color_code: str, use_color: bool = True) -> str:
+    """Apply ANSI color codes only when use_color is True."""
+    if use_color:
+        return f"{color_code}{text}{RESET}"
+    return text
 
 
 # ---------------------------------------------------------------------------
@@ -52,10 +55,15 @@ def render_terminal(
     results: list[CheckResult],
     scan_path: str,
     verbose: bool = False,
+    color: bool = True,
 ) -> str:
     score = compute_score(results)
     tier = get_tier(score)
     recommendations = get_recommendations(results)
+
+    # Wrap _c with the color preference for this render call
+    def c(text: str, code: str) -> str:
+        return _c(text, code, color)
 
     tier_color = TIER_COLORS[tier]
     lines: list[str] = []
@@ -66,8 +74,8 @@ def render_terminal(
         "  Agent Readiness Scanner  v0.1.0",
         _SEP,
         f"  Repo   : {scan_path}",
-        f"  Score  : {_c(f'{score:.0f} / 100', tier_color)}",
-        f"  Status : {_c(f'{tier}  —  {TIER_LABELS[tier]}', tier_color)}",
+        f"  Score  : {c(f'{score:.0f} / 100', tier_color)}",
+        f"  Status : {c(f'{tier}  —  {TIER_LABELS[tier]}', tier_color)}",
         _SEP,
         "",
     ]
@@ -82,10 +90,10 @@ def render_terminal(
 
     for r in results:
         icon = _STATUS_ICON[r["status"]]
-        color = _STATUS_COLOR[r["status"]]
+        status_color_code = _STATUS_COLOR[r["status"]]
         raw_status = f"{icon} {r['status'].upper()}"
-        colored_status = _c(raw_status, color)
-        # Pad based on raw length, then add color codes
+        colored_status = c(raw_status, status_color_code)
+        # Pad based on raw length (not colored length)
         pad = W_STATUS - len(raw_status)
         line = f"  {r['name']:<{W_NAME}} {colored_status}{' ' * max(pad, 0)}  {r['weight']}"
         lines.append(line)

@@ -10,8 +10,11 @@ No network calls. No LLM calls. No telemetry.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
+
+from . import __version__
 
 from .checks import run_all_checks
 from .report import render_json, render_terminal, write_markdown_report
@@ -39,7 +42,14 @@ Examples:
   agent-scan . --output markdown
   agent-scan . --generate
   agent-scan . --fail-under 70 --verbose
+  agent-scan . --no-color
 """,
+    )
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
 
     parser.add_argument(
@@ -79,6 +89,12 @@ Examples:
         action="store_true",
         help="Show evidence and recommendations for every check",
     )
+    parser.add_argument(
+        "--no-color",
+        action="store_true",
+        dest="no_color",
+        help="Disable ANSI color output (also respected via NO_COLOR env var)",
+    )
 
     return parser
 
@@ -107,18 +123,21 @@ def main(argv: list[str] | None = None) -> int:
     score = compute_score(results)
     scan_path = str(repo_path)
 
+    # Respect NO_COLOR env var (https://no-color.org) and --no-color flag
+    use_color = not (args.no_color or bool(os.environ.get("NO_COLOR")))
+
     # --- Output ---
     if args.output == "json":
         print(render_json(results, scan_path))
 
     elif args.output == "markdown":
         output_file = repo_path / "AGENT_READINESS.md"
-        print(render_terminal(results, scan_path, verbose=args.verbose))
+        print(render_terminal(results, scan_path, verbose=args.verbose, color=use_color))
         write_markdown_report(results, scan_path, output_file)
         print(f"\n  Markdown report written to: {output_file}\n")
 
     else:  # terminal
-        print(render_terminal(results, scan_path, verbose=args.verbose))
+        print(render_terminal(results, scan_path, verbose=args.verbose, color=use_color))
 
     # --- Generate mode ---
     if args.generate:
