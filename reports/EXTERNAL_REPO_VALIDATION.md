@@ -1,7 +1,7 @@
 # External Repo Validation — Agent Readiness Scanner
 
-**Generated:** 2026-05-20 19:26 UTC  
-**Scanner version:** 0.1.0  
+**Generated:** 2026-05-20 20:48 UTC  
+**Scanner version:** 0.2.0  
 **Method:** 5 local fixture repos representing real-world readiness levels  
 
 ---
@@ -13,7 +13,7 @@
 | Fixture 1 — Bare Readme Only | 29/100 | RED — Not Ready | RED | ✅ |
 | Fixture 2 — Python Project, No Governance | 50/100 | ORANGE — Needs Work | ORANGE | ✅ |
 | Fixture 3 — Node.js Project, Partial Setup | 71/100 | YELLOW — Mostly Ready | YELLOW | ✅ |
-| Fixture 4 — Good Structure, Critical Security Failures | 82/100 | YELLOW — Mostly Ready | YELLOW | ✅ |
+| Fixture 4 — Good Structure, Critical Security Failures | 71/100 | YELLOW — Mostly Ready | YELLOW | ✅ |
 | Fixture 5 — Fully Configured | 100/100 | GREEN — Ready | GREEN | ✅ |
 
 ---
@@ -22,9 +22,9 @@
 
 **Description:** Only a short README.md. No tests, CI, governance, or safety setup.
 
-| Score | Tier | Expected | Match |
-|---|---|---|---|
-| **29 / 100** | **RED — Not Ready** | RED | ✅ |
+| Score | Tier | Critical Failures | Expected | Match |
+|---|---|---|---|---|
+| **29 / 100** | **RED — Not Ready** | **0** | RED | ✅ |
 
 | Check | Status | Weight | Evidence |
 |---|---|---|---|
@@ -53,9 +53,9 @@
 
 **Description:** Has tests, pyproject.toml, .gitignore, and a substantive README. Missing all governance files: no AGENTS.md, no CI, no PR/issue templates.
 
-| Score | Tier | Expected | Match |
-|---|---|---|---|
-| **50 / 100** | **ORANGE — Needs Work** | ORANGE | ✅ |
+| Score | Tier | Critical Failures | Expected | Match |
+|---|---|---|---|---|
+| **50 / 100** | **ORANGE — Needs Work** | **0** | ORANGE | ✅ |
 
 | Check | Status | Weight | Evidence |
 |---|---|---|---|
@@ -84,9 +84,9 @@
 
 **Description:** Has CI, tests, package.json scripts, PR template, .env.example. Missing AGENTS.md, copilot-instructions, and issue templates.
 
-| Score | Tier | Expected | Match |
-|---|---|---|---|
-| **71 / 100** | **YELLOW — Mostly Ready** | YELLOW | ✅ |
+| Score | Tier | Critical Failures | Expected | Match |
+|---|---|---|---|---|
+| **71 / 100** | **YELLOW — Mostly Ready** | **0** | YELLOW | ✅ |
 
 | Check | Status | Weight | Evidence |
 |---|---|---|---|
@@ -115,11 +115,18 @@
 
 **Description:** Has governance files, CI, tests, and documentation. BUT: .env committed to repo root AND hardcoded API key in src/config.py.
 
-| Score | Tier | Expected | Match |
-|---|---|---|---|
-| **82 / 100** | **YELLOW — Mostly Ready** | YELLOW | ✅ |
+| Score | Tier | Critical Failures | Expected | Match |
+|---|---|---|---|---|
+| **71 / 100** | **YELLOW — Mostly Ready** | **2** | YELLOW | ✅ |
 
-> **Product Insight:** Score stays YELLOW despite two critical security failures because weight-based scoring spreads impact. This is a known product limitation: critical security failures should visually stand out regardless of overall score tier.
+> **Product Insight:** Score stays YELLOW despite two critical failures because weight-based scoring spreads impact. v0.2 fixes the visibility gap by surfacing critical failures separately from the score.
+
+### Critical Failures
+
+| Check | Evidence | Recommendation |
+|---|---|---|
+| No .env file committed | .env file found in repo root — may contain real secrets | Remove .env from the repo immediately and add it to .gitignore. |
+| No hardcoded secret patterns | Potential secrets in 1 file(s): src\config.py: OpenAI/Anthropic API key (sk-) | Remove hardcoded secrets and use environment variables or a secrets manager. |
 
 | Check | Status | Weight | Evidence |
 |---|---|---|---|
@@ -133,14 +140,14 @@
 | .env.example present (if needed) | ⚠️ WARN | 2 | .env-like file(s) found (.env) but no .env.example exists |
 | No .env file committed | ❌ FAIL | 3 | .env file found in repo root — may contain real secrets |
 | README.md present and substantive | ⚠️ WARN | 2 | README.md found but brief (468 characters) |
-| No hardcoded secret patterns | ✅ PASS | 3 | No obvious secret patterns detected in non-test source files |
+| No hardcoded secret patterns | ❌ FAIL | 3 | Potential secrets in 1 file(s): src\config.py: OpenAI/Anthropic API key (sk-) |
 | Agent boundary file present | ✅ PASS | 2 | AGENTS.md contains boundary/scope keywords |
 
 **Top Fixes:**
 
 1. Remove .env from the repo immediately and add it to .gitignore.
-2. Add .env.example with placeholder values to document required variables.
-3. Expand README.md with install instructions, usage, and examples.
+2. Remove hardcoded secrets and use environment variables or a secrets manager.
+3. Add .env.example with placeholder values to document required variables.
 
 ---
 
@@ -148,9 +155,9 @@
 
 **Description:** Has AGENTS.md with boundaries, copilot instructions, PR template, issue templates, CI, tests, Makefile, .env.example, .gitignore, README, CODEOWNERS. No .env committed. No secrets in source.
 
-| Score | Tier | Expected | Match |
-|---|---|---|---|
-| **100 / 100** | **GREEN — Ready** | GREEN | ✅ |
+| Score | Tier | Critical Failures | Expected | Match |
+|---|---|---|---|---|
+| **100 / 100** | **GREEN — Ready** | **0** | GREEN | ✅ |
 
 | Check | Status | Weight | Evidence |
 |---|---|---|---|
@@ -179,9 +186,9 @@
 
 - **Fixture 3 (YELLOW):** A Node.js project with CI, tests, PR template, and env setup is mostly ready. Missing governance files (AGENTS.md, copilot instructions) and issue templates drag the score to YELLOW. Fix is two files.
 
-### Known Limitation Confirmed
+### Critical Failure Visibility Confirmed
 
-- **Fixture 4 (YELLOW, security failures):** A repo with a committed `.env` file and a hardcoded API key in source code still scores in the YELLOW tier. This is a genuine product gap. The two critical security failures (weight 3 + weight 3) cost 22 points but the strong governance structure absorbs the loss. **Recommendation for v0.2:** Add a `CRITICAL_FAILURES` field to JSON output that lists checks with status=fail and weight=3, regardless of overall score. Consider displaying a red warning banner in terminal output when any weight-3 check fails, even if the tier is YELLOW.
+- **Fixture 4 (YELLOW, security failures):** A repo with a committed `.env` file and a hardcoded API key in source code still scores in the YELLOW tier. v0.2 keeps the score formula unchanged but surfaces both failures separately as critical blockers in terminal, Markdown, and JSON output.
 
 - **Fixture 5 (GREEN):** A fully configured repo scores 100/100. Every check passes. The CODEOWNERS file satisfies agent_boundary. The Makefile satisfies run_command. The .env.example satisfies env_example because .env.example is present. This is what a target repo looks like.
 
@@ -193,6 +200,6 @@ A 5-check failure on the highest-weight checks (weight 3) costs ~55 points. The 
 
 ## Verdict
 
-All 5 fixture tiers matched expectations. The scoring system produces honest results on realistic repos. The one confirmed product gap (security failures in YELLOW tier) is documented and has a clear v0.2 fix path.
+All 5 fixture tiers matched expectations. The scoring system produces honest results on realistic repos. v0.2 now surfaces critical failures separately so a YELLOW score cannot hide committed `.env` files or hardcoded secret-pattern findings.
 
 **Scanner is ready for public release.**

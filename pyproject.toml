@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-readiness"
-version = "0.1.0"
+version = "0.2.0"
 description = "Deterministic CLI that scans a repository for AI coding agent readiness"
 readme = "README.md"
 license = { text = "MIT" }
@@ -33,8 +33,8 @@ dev = ["pytest>=7.0"]
 agent-scan = "agent_readiness.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/agent-readiness"
-Issues = "https://github.com/yourusername/agent-readiness/issues"
+Homepage = "https://github.com/chevy155/agent-readiness"
+Issues = "https://github.com/chevy155/agent-readiness/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]

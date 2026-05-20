@@ -43,7 +43,7 @@ _BOUNDARY_KEYWORDS = re.compile(
 )
 
 _SECRET_PATTERNS = [
-    (re.compile(r"sk-[A-Za-z0-9]{20,}"), "OpenAI/Anthropic API key (sk-)"),
+    (re.compile(r"sk-[A-Za-z0-9_-]{20,}"), "OpenAI/Anthropic API key (sk-)"),
     (re.compile(r"ghp_[A-Za-z0-9]{36,}"), "GitHub Personal Access Token (ghp_)"),
     (re.compile(r"AKIA[A-Z0-9]{16}"), "AWS Access Key ID (AKIA)"),
     (re.compile(r"Bearer\s+[A-Za-z0-9\-._~+/]{20,}"), "Bearer token"),
@@ -512,12 +512,14 @@ def check_no_secrets(root: Path) -> CheckResult:
         if not path.is_file():
             continue
 
+        rel_parts = path.relative_to(root).parts
+
         # Skip vendor and build directories
-        if any(part in _SKIP_DIRS for part in path.parts):
+        if any(part in _SKIP_DIRS for part in rel_parts):
             continue
 
         # Skip test fixtures (mocked values are expected there)
-        if any(part in _TEST_DIRS for part in path.parts):
+        if any(part in _TEST_DIRS for part in rel_parts):
             continue
 
         # Only scan text-like files

@@ -7,6 +7,7 @@ import pytest
 from agent_readiness.checks import CheckResult
 from agent_readiness.scoring import (
     compute_score,
+    get_critical_failures,
     get_recommendations,
     get_tier,
 )
@@ -159,6 +160,48 @@ class TestGetRecommendations:
         ]
         recs = get_recommendations(results)
         assert recs == ["Fix this."]
+
+
+# ---------------------------------------------------------------------------
+# get_critical_failures
+# ---------------------------------------------------------------------------
+
+class TestGetCriticalFailures:
+    def test_returns_failed_critical_checks(self) -> None:
+        results = [
+            _make_result(
+                "fail",
+                3,
+                recommendation="Remove .env",
+                check_id="no_env_committed",
+            ),
+            _make_result("pass", 3, check_id="no_secrets"),
+        ]
+        critical = get_critical_failures(results)
+        assert len(critical) == 1
+        assert critical[0]["id"] == "no_env_committed"
+
+    def test_ignores_passing_critical_checks(self) -> None:
+        results = [
+            _make_result("pass", 3, check_id="no_env_committed"),
+            _make_result("pass", 3, check_id="no_secrets"),
+        ]
+        assert get_critical_failures(results) == []
+
+    def test_ignores_failed_noncritical_checks(self) -> None:
+        results = [
+            _make_result("fail", 3, check_id="ci_workflow"),
+            _make_result("fail", 2, check_id="agents_md"),
+        ]
+        assert get_critical_failures(results) == []
+
+    def test_returns_both_critical_failures(self) -> None:
+        results = [
+            _make_result("fail", 3, check_id="no_env_committed"),
+            _make_result("fail", 3, check_id="no_secrets"),
+        ]
+        critical = get_critical_failures(results)
+        assert [r["id"] for r in critical] == ["no_env_committed", "no_secrets"]
 
 
 # ---------------------------------------------------------------------------

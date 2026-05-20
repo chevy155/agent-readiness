@@ -35,7 +35,7 @@ If you are unsure whether your idea is in scope, open an issue to discuss it bef
 ## Getting Set Up
 
 ```bash
-git clone https://github.com/yourusername/agent-readiness
+git clone https://github.com/chevy155/agent-readiness
 cd agent-readiness
 pip install -e .
 python -m pytest -q

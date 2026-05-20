@@ -188,6 +188,25 @@ class TestNoSecrets:
         result = check_no_secrets(tmp_path)
         assert result["status"] == "pass"
 
+    def test_fixture_repo_root_secret_is_not_skipped(self, tmp_path: Path) -> None:
+        """A fixture repo scanned as root should scan its source files.
+
+        The real project stores fixture repos under tests/fixtures/, but when a
+        fixture repo is the scan root, its own src/ directory is production-like
+        content and must not be skipped because an ancestor folder is named
+        fixtures.
+        """
+        fixture_root = tmp_path / "tests" / "fixtures" / "repo"
+        src = fixture_root / "src"
+        src.mkdir(parents=True)
+        (src / "config.py").write_text(
+            "TOKEN = 'ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij'\n"
+        )
+
+        result = check_no_secrets(fixture_root)
+        assert result["status"] == "fail"
+        assert "src" in result["evidence"]
+
     def test_weight_is_3(self, tmp_path: Path) -> None:
         result = check_no_secrets(tmp_path)
         assert result["weight"] == 3

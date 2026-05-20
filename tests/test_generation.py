@@ -210,6 +210,110 @@ class TestMarkdownReportGeneration:
 
 
 # ---------------------------------------------------------------------------
+# Critical failure reporting
+# ---------------------------------------------------------------------------
+
+class TestCriticalFailureReporting:
+    def test_terminal_includes_critical_banner_for_env_file(self, tmp_path: Path) -> None:
+        from agent_readiness.checks import run_all_checks
+        from agent_readiness.report import render_terminal
+
+        (tmp_path / ".env").write_text("SECRET_KEY=abc123\n")
+        results = run_all_checks(tmp_path)
+        output = render_terminal(results, str(tmp_path), color=False)
+
+        assert "Critical failures: 1" in output
+        assert "CRITICAL FAILURES PRESENT" in output
+        assert "No .env file committed" in output
+
+    def test_terminal_includes_critical_banner_for_secret_pattern(self, tmp_path: Path) -> None:
+        from agent_readiness.checks import run_all_checks
+        from agent_readiness.report import render_terminal
+
+        (tmp_path / "config.py").write_text(
+            "TOKEN = 'ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij'\n"
+        )
+        results = run_all_checks(tmp_path)
+        output = render_terminal(results, str(tmp_path), color=False)
+
+        assert "CRITICAL FAILURES PRESENT" in output
+        assert "No hardcoded secret patterns" in output
+        assert "config.py" in output
+
+    def test_terminal_omits_critical_banner_when_clean(self, tmp_path: Path) -> None:
+        from agent_readiness.checks import run_all_checks
+        from agent_readiness.report import render_terminal
+
+        results = run_all_checks(tmp_path)
+        output = render_terminal(results, str(tmp_path), color=False)
+
+        assert "Critical failures: 0" in output
+        assert "CRITICAL FAILURES PRESENT" not in output
+
+    def test_markdown_includes_critical_section(self, tmp_path: Path) -> None:
+        from agent_readiness.checks import run_all_checks
+        from agent_readiness.report import render_markdown
+
+        (tmp_path / ".env").write_text("SECRET_KEY=abc123\n")
+        results = run_all_checks(tmp_path)
+        output = render_markdown(results, str(tmp_path))
+
+        assert "## Critical Failures Present" in output
+        assert "No .env file committed" in output
+
+    def test_json_includes_critical_fields(self, tmp_path: Path) -> None:
+        import json
+        from agent_readiness.checks import run_all_checks
+        from agent_readiness.report import render_json
+
+        (tmp_path / ".env").write_text("SECRET_KEY=abc123\n")
+        results = run_all_checks(tmp_path)
+        data = json.loads(render_json(results, str(tmp_path)))
+
+        assert data["critical_failures_present"] is True
+        assert len(data["critical_failures"]) == 1
+        assert data["critical_failures"][0]["id"] == "no_env_committed"
+
+    def test_json_clean_repo_has_no_critical_failures(self, tmp_path: Path) -> None:
+        import json
+        from agent_readiness.checks import run_all_checks
+        from agent_readiness.report import render_json
+
+        results = run_all_checks(tmp_path)
+        data = json.loads(render_json(results, str(tmp_path)))
+
+        assert data["critical_failures_present"] is False
+        assert data["critical_failures"] == []
+
+    def test_fixture_04_keeps_yellow_score_and_has_critical_failures(self) -> None:
+        import json
+        from pathlib import Path
+
+        from agent_readiness.checks import run_all_checks
+        from agent_readiness.report import render_json, render_terminal
+        from agent_readiness.scoring import compute_score, get_tier
+
+        repo_root = Path(__file__).parent.parent
+        fixture = repo_root / "tests" / "fixtures" / "fixture_04_secrets_risk"
+        results = run_all_checks(fixture)
+        score = compute_score(results)
+
+        assert score == 71.4
+        assert get_tier(score) == "YELLOW"
+
+        data = json.loads(render_json(results, str(fixture)))
+        assert data["critical_failures_present"] is True
+        assert {r["id"] for r in data["critical_failures"]} == {
+            "no_env_committed",
+            "no_secrets",
+        }
+
+        output = render_terminal(results, str(fixture), color=False)
+        assert "Critical failures: 2" in output
+        assert "CRITICAL FAILURES PRESENT" in output
+
+
+# ---------------------------------------------------------------------------
 # --no-color and NO_COLOR support
 # ---------------------------------------------------------------------------
 

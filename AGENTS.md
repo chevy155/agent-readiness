@@ -14,7 +14,10 @@ test coverage signals, documentation, and safety patterns.
 The product goal is a self-serve, hands-off tool. It must require no consulting, no manual
 intervention, and no external services to reach first value.
 
-**Current version: v0.1.0 — CLI only.**
+**Current version: v0.2.0 — CLI only.**
+
+v0.2 priority is bounded: critical-failure visibility and positioning clarity
+only. Do not expand the product while working this release.
 
 ---
 
@@ -46,6 +49,10 @@ Agents **must not** make the following changes without explicit operator approva
 - Add SaaS, auth, dashboard, billing, or GitHub App features
 - Expand scope to include Token Burn Firewall or Repo Red Cell Bot
 
+Before adding any new feature, check `docs/LAUNCH_LOG.md` and the latest
+`reports/OPS_REPORT_*.md`. If launch feedback does not support the feature,
+do not build it without explicit operator approval.
+
 ---
 
 ## Test Commands
@@ -62,6 +69,7 @@ python -m pytest tests/test_checks.py -v
 
 # Scan this repo (smoke test the CLI)
 python -m agent_readiness.cli . --output terminal
+python -m agent_readiness.cli . --output terminal --no-color
 python -m agent_readiness.cli . --output json
 python -m agent_readiness.cli . --output markdown
 python -m agent_readiness.cli . --generate
@@ -93,6 +101,13 @@ agent-scan . --output terminal
 - `templates/` static template files
 - README, AGENTS.md, `.github/` governance files
 
+**In scope for v0.2 only:**
+
+- Critical-failure visibility for committed `.env` and hardcoded secret-pattern findings
+- README positioning as an agent preflight / runway check
+- Agent-facing doctrine updates
+- Roadmap and build report documentation
+
 **Out of scope (do not build):**
 
 - SaaS dashboard or web UI
@@ -115,6 +130,10 @@ agent-scan . --output terminal
 5. Do not commit `AGENT_READINESS.md` — it is a generated artifact.
 6. Do not commit `.env`, API keys, tokens, or any credentials.
 7. The scanner must be runnable offline and cost nothing per invocation.
+8. Before modifying this repo, run tests first if practical; if not practical,
+   explain why before editing.
+9. Do not expand into SaaS, dashboard, auth, billing, LLM, or hosted paths
+   without explicit operator approval.
 
 ---
 
@@ -124,7 +143,7 @@ agent-scan . --output terminal
 agent_readiness/
   __init__.py      — package exports and version
   checks.py        — 12 deterministic check functions → CheckResult
-  scoring.py       — compute_score(), get_tier(), get_recommendations()
+  scoring.py       — compute_score(), get_tier(), get_recommendations(), get_critical_failures()
   report.py        — render_terminal(), render_json(), render_markdown()
   templates.py     — generate_agents_md(), generate_copilot_instructions()
   cli.py           — argparse CLI, orchestrates the above

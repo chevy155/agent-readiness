@@ -35,6 +35,11 @@ TIER_COLORS: dict[Tier, str] = {
 
 RESET = "\033[0m"
 
+CRITICAL_CHECK_IDS = frozenset({
+    "no_env_committed",
+    "no_secrets",
+})
+
 
 def compute_score(results: list[CheckResult]) -> float:
     """Normalize weighted check results to a 0–100 score.
@@ -80,3 +85,16 @@ def get_recommendations(results: list[CheckResult], top_n: int = 3) -> list[str]
     _priority = {"fail": 0, "warn": 1}
     actionable.sort(key=lambda r: (_priority[r["status"]], -r["weight"]))
     return [r["recommendation"] for r in actionable[:top_n]]
+
+
+def get_critical_failures(results: list[CheckResult]) -> list[CheckResult]:
+    """Return failed checks that should block agent modifications.
+
+    Critical failures do not change the score formula. They are surfaced as a
+    separate visibility layer so a high overall score cannot hide a committed
+    `.env` file or hardcoded secret-pattern finding.
+    """
+    return [
+        r for r in results
+        if r["id"] in CRITICAL_CHECK_IDS and r["status"] == "fail"
+    ]

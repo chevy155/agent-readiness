@@ -7,10 +7,12 @@
 
 ## Product Category
 
-**Agent-readiness static analysis**
+**Agent preflight infrastructure**
 
 Not a security scanner. Not a code quality linter. Not a CI framework.
-This is a repo governance tool for the AI-agent era: it answers whether a repo has the structural prerequisites for safe and effective AI coding-agent operation.
+This is the deterministic runway inspection before AI coding agents touch a repo.
+It answers whether a repo has the structural prerequisites for safe and effective
+AI coding-agent operation.
 
 ---
 
@@ -75,6 +77,18 @@ Other tools check code quality, security vulnerabilities, or test coverage. This
 
 The concept is new: repo readiness for AI agents is not yet a recognized category. This tool defines and occupies it.
 
+Primary comparison: Claude, Cursor, Copilot, Codex, and local agents are agent
+workers. Agent Readiness is the runway inspection before they work.
+
+Differentiation:
+
+- Deterministic
+- No LLM calls
+- No telemetry
+- CI-ready
+- Model-agnostic
+- Works before any agent touches the repo
+
 ---
 
 ## The Strongest Single Line
@@ -90,9 +104,10 @@ Use this line in every launch post. It is the fastest explanation of the product
 | Phrase | Context |
 |---|---|
 | **"agent-ready"** | Describing repos that pass the scan |
+| **"agent preflight"** | The product category and use case |
 | **"deterministic"** | Describing the scan itself; contrast with LLM-based tools |
 | **"repo governance"** | The category; use alongside "static analysis" |
-| **"AI coding-agent readiness"** | The formal product category |
+| **"coding-agent readiness"** | The formal product category |
 | **"no LLM calls"** | In every technical description |
 | **"no telemetry"** | In every trust-sensitive context |
 | **"structure before autonomy"** | The philosophical framing |
@@ -115,6 +130,7 @@ Use this line in every launch post. It is the fastest explanation of the product
 | **"enterprise-grade"** | Vague filler |
 | **"production-ready"** | Vague filler |
 | **"game-changing"** | Hype; kills credibility with developers |
+| **"autonomous magic"** | Hype; hides the actual deterministic value |
 
 ---
 
@@ -140,6 +156,7 @@ These modules extend the same category (agent governance) without contradicting 
 |---|---|
 | vs. linters (ESLint, flake8) | They check code quality. We check repo structure for AI agents. |
 | vs. security scanners (truffleHog, gitleaks) | They scan for leaked secrets comprehensively. We flag obvious patterns as one of 12 checks. |
+| vs. Claude/Cursor/Copilot/Codex | They are agent workers. We inspect the runway before they work. |
 | vs. GitHub Copilot itself | Copilot is the agent. We make repos ready for the agent. |
 | vs. OpenAI Codex | Same as Copilot — we're the preparation layer, not the agent. |
 | vs. general CI quality tools | They enforce code standards. We enforce agent governance. |
@@ -164,9 +181,9 @@ See [`docs/LAUNCH_LOG.md`](LAUNCH_LOG.md) for the full launch event record.
 
 ```
 Product name:    Agent Readiness Scanner
-Version:         v0.1.0
-Tagline:         Is your repo ready for AI coding agents?
-One-liner:       Deterministic CLI that gives your repo a 0–100 agent readiness score.
+Version:         v0.2.0
+Tagline:         Agents are powerful, but they need a runway. This tool checks the runway.
+One-liner:       Deterministic CLI that gives your repo a 0–100 agent readiness score and surfaces critical failures.
 Trust signals:   no LLM calls, no telemetry, no SaaS, no account, MIT license
 Distribution:    GitHub open-source, pip install, GitHub Actions usage
 Target channel:  Hacker News, Reddit r/LocalLLaMA, X developer community, LinkedIn

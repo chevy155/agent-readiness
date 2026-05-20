@@ -20,6 +20,7 @@ from agent_readiness.checks import run_all_checks
 from agent_readiness.scoring import (
     TIER_LABELS,
     compute_score,
+    get_critical_failures,
     get_recommendations,
     get_tier,
 )
@@ -61,10 +62,9 @@ FIXTURES = [
         ),
         "expected_tier": "YELLOW",
         "note": (
-            "Score stays YELLOW despite two critical security failures "
-            "because weight-based scoring spreads impact. "
-            "This is a known product limitation: critical security failures "
-            "should visually stand out regardless of overall score tier."
+            "Score stays YELLOW despite two critical failures because "
+            "weight-based scoring spreads impact. v0.2 fixes the visibility "
+            "gap by surfacing critical failures separately from the score."
         ),
     },
     {
@@ -88,12 +88,14 @@ def scan_fixture(fixture: dict) -> dict:
     score = compute_score(results)
     tier = get_tier(score)
     recommendations = get_recommendations(results)
+    critical_failures = get_critical_failures(results)
     return {
         "root": root,
         "results": results,
         "score": score,
         "tier": tier,
         "recommendations": recommendations,
+        "critical_failures": critical_failures,
     }
 
 
@@ -109,15 +111,28 @@ def render_fixture_section(fixture: dict, scan: dict) -> list[str]:
         "",
         f"**Description:** {fixture['description']}",
         "",
-        f"| Score | Tier | Expected | Match |",
-        f"|---|---|---|---|",
+        f"| Score | Tier | Critical Failures | Expected | Match |",
+        f"|---|---|---|---|---|",
         f"| **{score:.0f} / 100** | **{tier} — {TIER_LABELS[tier]}** "
-        f"| {expected} | {match_icon} |",
+        f"| **{len(scan['critical_failures'])}** | {expected} | {match_icon} |",
         "",
     ]
 
     if "note" in fixture:
         lines += [f"> **Product Insight:** {fixture['note']}", ""]
+
+    if scan["critical_failures"]:
+        lines += [
+            "### Critical Failures",
+            "",
+            "| Check | Evidence | Recommendation |",
+            "|---|---|---|",
+        ]
+        for r in scan["critical_failures"]:
+            evidence = r["evidence"].replace("|", "\\|")
+            recommendation = r["recommendation"].replace("|", "\\|")
+            lines.append(f"| {r['name']} | {evidence} | {recommendation} |")
+        lines.append("")
 
     lines += [
         "| Check | Status | Weight | Evidence |",
@@ -143,7 +158,7 @@ def main() -> None:
         "# External Repo Validation — Agent Readiness Scanner",
         "",
         f"**Generated:** {ts}  ",
-        f"**Scanner version:** 0.1.0  ",
+        f"**Scanner version:** 0.2.0  ",
         "**Method:** 5 local fixture repos representing real-world readiness levels  ",
         "",
         "---",
@@ -193,16 +208,12 @@ def main() -> None:
           "setup is mostly ready. Missing governance files (AGENTS.md, copilot instructions) "
           "and issue templates drag the score to YELLOW. Fix is two files.",
         "",
-        "### Known Limitation Confirmed",
+        "### Critical Failure Visibility Confirmed",
         "",
         "- **Fixture 4 (YELLOW, security failures):** A repo with a committed `.env` file "
-          "and a hardcoded API key in source code still scores in the YELLOW tier. This is "
-          "a genuine product gap. The two critical security failures (weight 3 + weight 3) "
-          "cost 22 points but the strong governance structure absorbs the loss. "
-          "**Recommendation for v0.2:** Add a `CRITICAL_FAILURES` field to JSON output "
-          "that lists checks with status=fail and weight=3, regardless of overall score. "
-          "Consider displaying a red warning banner in terminal output when any weight-3 "
-          "check fails, even if the tier is YELLOW.",
+          "and a hardcoded API key in source code still scores in the YELLOW tier. v0.2 "
+          "keeps the score formula unchanged but surfaces both failures separately as "
+          "critical blockers in terminal, Markdown, and JSON output.",
         "",
         "- **Fixture 5 (GREEN):** A fully configured repo scores 100/100. Every check passes. "
           "The CODEOWNERS file satisfies agent_boundary. The Makefile satisfies run_command. "
@@ -221,8 +232,8 @@ def main() -> None:
         "## Verdict",
         "",
         "All 5 fixture tiers matched expectations. The scoring system produces honest results "
-        "on realistic repos. The one confirmed product gap (security failures in YELLOW tier) "
-        "is documented and has a clear v0.2 fix path.",
+        "on realistic repos. v0.2 now surfaces critical failures separately so a YELLOW score "
+        "cannot hide committed `.env` files or hardcoded secret-pattern findings.",
         "",
         "**Scanner is ready for public release.**",
     ]

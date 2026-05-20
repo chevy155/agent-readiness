@@ -1,12 +1,21 @@
 # Agent Readiness Scanner
 
-**Is your repo actually ready for AI coding agents?**
+**The deterministic runway check before AI coding agents touch your repo.**
 
 [![CI](https://github.com/chevy155/agent-readiness/actions/workflows/test.yml/badge.svg)](https://github.com/chevy155/agent-readiness/actions/workflows/test.yml)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://pypi.org/project/agent-readiness/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A deterministic readiness scanner for Cursor, GitHub Copilot, Claude Code, Codex, and local agents.
+Claude, Cursor, Copilot, Codex, and local agents can help modify a repo.
+Agent Readiness Scanner tells you whether the repo is structured enough before
+those agents touch it.
+
+It runs locally, checks 12 repo-governance signals, returns a **0–100 readiness
+score**, and now surfaces **critical failures** separately so serious issues
+cannot hide inside a decent score.
+
+Output: terminal, JSON, or Markdown. Trust signal: deterministic checks, no LLM
+calls, no telemetry, no SaaS, no account.
 
 ```bash
 git clone https://github.com/chevy155/agent-readiness.git
@@ -20,6 +29,8 @@ agent-scan .
 ## Why This Exists
 
 **Humans can infer missing context. Agents cannot.**
+
+**Agents are powerful, but they need a runway. This tool checks the runway.**
 
 Most repos work fine for human developers. But AI coding agents operate differently. They need:
 
@@ -37,6 +48,26 @@ Without this structure, agents burn tokens, make bad changes, and erode trust.
 `agent-scan` gives your repo a **0–100 readiness score** in under 3 seconds — then generates the missing files.
 
 **No LLM calls. No telemetry. No SaaS. No account. Just a local scan.**
+
+---
+
+## Why Not Just Ask Claude, Cursor, Copilot, or Codex?
+
+Claude, Cursor, Copilot, Codex, and local agents can help inspect or improve a
+repo. Agent Readiness Scanner is different: it is a deterministic preflight
+check before those agents touch the repo.
+
+**Code review checks the change. Agent Readiness checks whether the repo can
+safely receive an agent in the first place.**
+
+This is not a replacement for AI coding tools. It is the runway inspection
+before using them:
+
+- Repeatable: same repo, same score, every run
+- CI-compatible: use `--fail-under` to gate agent readiness
+- Model-agnostic: works before Claude, Cursor, Copilot, Codex, or local agents
+- Zero LLM calls: no tokens, no API keys, no inference
+- Zero telemetry: the scanner does not phone home
 
 ---
 
@@ -103,11 +134,12 @@ agent-scan --version
 
 ```
 ──────────────────────────────────────────────────────────────
-  Agent Readiness Scanner  v0.1.0
+  Agent Readiness Scanner  v0.2.0
 ──────────────────────────────────────────────────────────────
   Repo   : /my-project
   Score  : 83 / 100
   Status : YELLOW  —  Mostly Ready
+  Critical failures: 0
 ──────────────────────────────────────────────────────────────
 
   Check                                      Status  Wt
@@ -136,6 +168,34 @@ Run `agent-scan . --generate` → both failures disappear in seconds.
 
 ---
 
+## Critical Failures
+
+The score still uses the same weight formula, but v0.2 adds a separate
+critical-failure layer. If a repo has a committed `.env` file or hardcoded
+secret-pattern finding, the scanner shows a blocker near the top of terminal,
+Markdown, and JSON output.
+
+Example:
+
+```text
+Score  : 82 / 100
+Status : YELLOW — Mostly Ready
+Critical failures: 2
+
+CRITICAL FAILURES PRESENT
+
+  This repo has one or more high-severity failures that should be fixed
+  before allowing AI coding agents to modify it.
+
+- No .env file committed: .env file found in repo root — may contain real secrets
+- No hardcoded secret patterns: Potential secrets in 1 file(s): src/config.py: OpenAI/Anthropic API key (sk-)
+```
+
+Critical failures are blockers for agent execution even when the numeric score
+is YELLOW or GREEN.
+
+---
+
 ## Score Tiers
 
 | Score | Tier | Meaning |
@@ -161,7 +221,7 @@ Run `agent-scan . --generate` → both failures disappear in seconds.
 | 8 | .env.example present | 2 | If `.env` patterns detected, `.env.example` must exist |
 | 9 | No .env committed | 3 | `.env` must not exist in repo root |
 | 10 | README.md substantive | 2 | Present and > 200 characters |
-| 11 | No hardcoded secrets | 3 | No `sk-`, `ghp_`, `AKIA`, or `Bearer` tokens in source |
+| 11 | No hardcoded secrets | 3 | No obvious `sk-`, `ghp_`, `AKIA`, or `Bearer` token patterns in source |
 | 12 | Agent boundary file | 2 | `CODEOWNERS`, `.agentignore`, or `AGENTS.md` with scope section |
 
 Weights sum to 27. Score = (earned weight / 27) × 100.
@@ -211,7 +271,8 @@ deterministic:   true
 llm_calls:       none
 telemetry:       none
 network_calls:   none
-version:         0.1.0
+critical_layer:  true
+version:         0.2.0
 ```
 
 **What agents should do in this repo:**
@@ -231,13 +292,13 @@ version:         0.1.0
 - `agent_readiness/checks.py` — the 12 check functions
 - `agent_readiness/scoring.py` — score math and tier mapping
 - `AGENTS.md` — operational governance
-- `tests/` — full test suite (108 tests)
+- `tests/` — full test suite
 
 Full machine-readable description: [`docs/AGENT_DISCOVERY.md`](docs/AGENT_DISCOVERY.md)
 
 ---
 
-## Why No LLM Calls in v0
+## Why No LLM Calls
 
 The core scan is pure file-system analysis:
 
@@ -248,7 +309,8 @@ The core scan is pure file-system analysis:
 
 The scanner already scans itself and scores **100/100 GREEN**.
 
-Future versions may add an optional LLM-assisted generation layer. The core scan will always remain deterministic and free.
+The core scan will stay deterministic and free. Optional future assistants must
+not weaken this trust boundary.
 
 ---
 
@@ -256,19 +318,21 @@ Future versions may add an optional LLM-assisted generation layer. The core scan
 
 | Version | Feature |
 |---|---|
-| **v0.1 (current)** | CLI scanner, 12 checks, all output modes, file generation |
-| **v0.2** | Critical-failures banner, score history (local), `--no-color` polish |
-| **v0.3** | GitHub Actions Marketplace listing |
-| **future** | GitHub App with org-level dashboard |
+| **v0.1** | CLI scanner, 12 checks, all output modes, file generation |
+| **v0.2 (current)** | Critical failures banner, positioning upgrade, agent preflight doctrine |
+| **next likely** | PyPI publish, GitHub Action polish, README badge, improved scoring model |
+| **future only** | GitHub App with org-level dashboard |
 | **future** | Token Burn Firewall module |
 | **future** | Repo Red Cell Bot module |
+
+Full roadmap: [`docs/ROADMAP.md`](docs/ROADMAP.md)
 
 ---
 
 ## Important Limitations
 
 > **This is not a security scanner.**
-> Check 11 detects four common patterns. Use [truffleHog](https://github.com/trufflesecurity/trufflehog) or [gitleaks](https://github.com/gitleaks/gitleaks) for real secret scanning. See [SECURITY.md](SECURITY.md).
+> Check 11 detects common obvious patterns (`sk-`, `ghp_`, `AKIA`, `Bearer`). Use [truffleHog](https://github.com/trufflesecurity/trufflehog) or [gitleaks](https://github.com/gitleaks/gitleaks) for real secret scanning. See [SECURITY.md](SECURITY.md).
 
 > **This does not replace human review.**
 > A passing score means the repo has the structural signals agents need. It does not guarantee agent-generated code will be correct or safe.
