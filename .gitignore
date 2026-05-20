@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+MANIFEST
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+*.coveragerc
+
+# pyenv / ruff / mypy
+.python-version
+.ruff_cache/
+.mypy_cache/
+
+# Secrets — never commit these
+.env
+.env.local
+.env.*.local
+secrets.json
+credentials.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*~
+
+# Generated scan artifacts (users may want to commit AGENT_READINESS.md, but not required)
+# Uncomment to ignore:
+# AGENT_READINESS.md

@@ -1,0 +1,125 @@
+$ agent-scan /path/to/my-project --verbose
+
+──────────────────────────────────────────────────────────────
+  Agent Readiness Scanner  v0.1.0
+──────────────────────────────────────────────────────────────
+  Repo   : /path/to/my-project
+  Score  : 83 / 100
+  Status : YELLOW  —  Mostly Ready
+──────────────────────────────────────────────────────────────
+
+  Check                                      Status  Wt
+  ────────────────────────────────────────── ─────── ──
+  AGENTS.md present                          ✗ FAIL  3
+     Evidence : AGENTS.md not found in repo root
+     Fix      : Run `agent-scan . --generate` to create a starter AGENTS.md.
+
+  .github/copilot-instructions.md present    ✗ FAIL  2
+     Evidence : .github/copilot-instructions.md not found
+     Fix      : Run `agent-scan . --generate` to create a starter copilot-instructions.md.
+
+  PR template present                        ✓ PASS  2
+     Evidence : Found .github/pull_request_template.md
+
+  Issue templates present                    ✓ PASS  1
+     Evidence : Found 2 template(s) in .github/ISSUE_TEMPLATE/
+
+  CI workflow present                        ✓ PASS  3
+     Evidence : Found 1 workflow(s): test.yml
+
+  Test directory present                     ✓ PASS  3
+     Evidence : Found tests/ with 8 test file(s)
+
+  Run command documented                     ✓ PASS  2
+     Evidence : Found Makefile with `test` target
+
+  .env.example present (if needed)           ✓ PASS  2
+     Evidence : No .env-like files detected — check not applicable
+
+  No .env file committed                     ✓ PASS  3
+     Evidence : .env not present; .gitignore includes .env pattern
+
+  README.md present and substantive          ✓ PASS  2
+     Evidence : README.md found (2,847 characters)
+
+  No hardcoded secret patterns               ✓ PASS  3
+     Evidence : No obvious secret patterns detected in non-test source files
+
+  Agent boundary file present                ✓ PASS  2
+     Evidence : Found CODEOWNERS at CODEOWNERS
+
+──────────────────────────────────────────────────────────────
+  Top Fixes:
+    1. Run `agent-scan . --generate` to create a starter AGENTS.md.
+    2. Run `agent-scan . --generate` to create a starter copilot-instructions.md.
+
+  Tip: run with --generate to create missing governance files.
+──────────────────────────────────────────────────────────────
+
+
+$ agent-scan /path/to/my-project --generate
+
+──────────────────────────────────────────────────────────────
+  Agent Readiness Scanner  v0.1.0
+──────────────────────────────────────────────────────────────
+  Repo   : /path/to/my-project
+  Score  : 83 / 100
+  Status : YELLOW  —  Mostly Ready
+──────────────────────────────────────────────────────────────
+
+  Check                                      Status  Wt
+  ────────────────────────────────────────── ─────── ──
+  AGENTS.md present                          ✗ FAIL  3
+  .github/copilot-instructions.md present    ✗ FAIL  2
+  PR template present                        ✓ PASS  2
+  Issue templates present                    ✓ PASS  1
+  CI workflow present                        ✓ PASS  3
+  Test directory present                     ✓ PASS  3
+  Run command documented                     ✓ PASS  2
+  .env.example present (if needed)           ✓ PASS  2
+  No .env file committed                     ✓ PASS  3
+  README.md present and substantive          ✓ PASS  2
+  No hardcoded secret patterns               ✓ PASS  3
+  Agent boundary file present                ✓ PASS  2
+
+──────────────────────────────────────────────────────────────
+  Top Fixes:
+    1. Run `agent-scan . --generate` to create a starter AGENTS.md.
+    2. Run `agent-scan . --generate` to create a starter copilot-instructions.md.
+
+  Tip: run with --generate to create missing governance files.
+──────────────────────────────────────────────────────────────
+
+  Generating missing governance files...
+  ✓ Created: /path/to/my-project/AGENTS.md
+  ✓ Created: /path/to/my-project/.github/copilot-instructions.md
+
+
+$ agent-scan /path/to/my-project
+
+──────────────────────────────────────────────────────────────
+  Agent Readiness Scanner  v0.1.0
+──────────────────────────────────────────────────────────────
+  Repo   : /path/to/my-project
+  Score  : 100 / 100
+  Status : GREEN  —  Ready
+──────────────────────────────────────────────────────────────
+
+  Check                                      Status  Wt
+  ────────────────────────────────────────── ─────── ──
+  AGENTS.md present                          ✓ PASS  3
+  .github/copilot-instructions.md present    ✓ PASS  2
+  PR template present                        ✓ PASS  2
+  Issue templates present                    ✓ PASS  1
+  CI workflow present                        ✓ PASS  3
+  Test directory present                     ✓ PASS  3
+  Run command documented                     ✓ PASS  2
+  .env.example present (if needed)           ✓ PASS  2
+  No .env file committed                     ✓ PASS  3
+  README.md present and substantive          ✓ PASS  2
+  No hardcoded secret patterns               ✓ PASS  3
+  Agent boundary file present                ✓ PASS  2
+
+──────────────────────────────────────────────────────────────
+  Tip: run with --generate to create missing governance files.
+──────────────────────────────────────────────────────────────
