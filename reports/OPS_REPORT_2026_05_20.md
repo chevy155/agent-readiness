@@ -1,5 +1,8 @@
 # Ops Report — chevy155/agent-readiness
 
+> **Hacker News launch live:** https://news.ycombinator.com/item?id=48213323
+> Copy HN comments into `data/feedback/hackernews.md` and re-run this report.
+
 **Generated:** 2026-05-20 20:00 UTC
 
 ────────────────────────────────────────────────────────────

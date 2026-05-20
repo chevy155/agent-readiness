@@ -138,6 +138,9 @@ git push
 
 ## 6. Launch Posts
 
+**Hacker News — LIVE:**
+https://news.ycombinator.com/item?id=48213323
+
 See [`docs/LAUNCH_POSTS.md`](LAUNCH_POSTS.md) for ready-to-use copy for:
 
 - LinkedIn
@@ -194,7 +197,7 @@ python -m pytest -q
 | 3 | Confirm CI passing on all 4 Python versions | ☐ |
 | 4 | Create GitHub Release for v0.1.0 | ☐ |
 | 5 | Self-scan, commit AGENT_READINESS.md | ☐ |
-| 6 | Post Show HN | ☐ |
+| 6 | Post Show HN | ✓ LIVE — https://news.ycombinator.com/item?id=48213323 |
 | 7 | Post Reddit r/LocalLLaMA | ☐ |
 | 8 | Post X/Twitter thread | ☐ |
 | 9 | Post LinkedIn | ☐ |

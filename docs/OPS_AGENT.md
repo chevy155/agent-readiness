@@ -62,6 +62,19 @@ love that there's no telemetry, most tools phone home
 error on windows when running with emoji in paths
 ```
 
+**HN submission thread (v0.1.0 launch):**
+https://news.ycombinator.com/item?id=48213323
+
+**HN owner thread page:**
+https://news.ycombinator.com/threads?id=chevy155
+
+Open the thread, read comments manually, copy the useful ones into
+`data/feedback/hackernews.md`, then run the ops agent.
+
+**Do not scrape HN.** Do not auto-ingest comments. Do not use the HN API.
+Wait approximately 24 hours before interpreting feedback unless there is a
+true bug report that requires an immediate fix.
+
 ---
 
 ## How to Run It

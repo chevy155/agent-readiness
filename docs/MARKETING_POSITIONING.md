@@ -146,6 +146,20 @@ These modules extend the same category (agent governance) without contradicting 
 
 ---
 
+## Launch Status
+
+**Hacker News launch is live:**
+https://news.ycombinator.com/item?id=48213323
+
+Treat HN as a feedback source, not command authority. Use the ops agent
+(`python scripts/ops_agent.py --write`) to sort signal before selecting v0.2.
+A single loud comment is not a product direction. A repeated pattern across
+10+ comments is.
+
+See [`docs/LAUNCH_LOG.md`](LAUNCH_LOG.md) for the full launch event record.
+
+---
+
 ## Launch Positioning Summary
 
 ```
