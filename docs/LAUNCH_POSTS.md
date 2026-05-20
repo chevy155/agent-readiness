@@ -138,28 +138,39 @@ Works on any Python, macOS, Linux, Windows.
 
 ## Hacker News / Show HN Post
 
----
-
-**Show HN: Agent Readiness Scanner – deterministic CLI to score repo readiness for AI agents**
-
-I built a small Python CLI that answers one question: is this repo actually ready for AI coding agents?
-
-The motivation: I kept watching AI agents make bad decisions in repos that were fine for humans but missing key structure. No AGENTS.md. No test suite. No run commands. Weak CI. Committed .env files. Without that structure, agents burn tokens and make changes no one asked for.
-
-The tool runs 12 deterministic file-system checks (no LLM, no network) and gives a 0–100 score in under 3 seconds. It can also generate starter AGENTS.md and GitHub Copilot instruction files.
-
-```bash
-git clone https://github.com/chevy155/agent-readiness.git
-cd agent-readiness
-pip install -e .
-agent-scan .
+**Title:**
+```
+Show HN: Agent Readiness Scanner – Check if your repo is ready for AI coding agents
 ```
 
-No telemetry. No SaaS. No account. Zero runtime dependencies.
+**Body:**
+```
+I built Agent Readiness Scanner, a small open-source CLI that answers one question:
 
-Repo: https://github.com/chevy155/agent-readiness
+Is your repo actually ready for AI coding agents?
 
-Curious what checks you'd add. The 12 I landed on: AGENTS.md, copilot instructions, PR template, issue templates, CI workflow, test directory, run command documented, .env.example present, no .env committed, substantive README, no hardcoded secret patterns, agent boundary file.
+Humans can infer missing context. Agents cannot.
+
+Most repos may be readable by humans but are under-specified for agents: missing run
+commands, weak CI, no AGENTS.md, no Copilot instructions, unclear test paths, no PR
+templates, and no agent boundaries.
+
+This tool gives a repo a 0–100 readiness score using deterministic checks.
+
+No LLM calls. No telemetry. No SaaS. No account required.
+
+Current v0.1.0 checks 12 signals: AGENTS.md, Copilot instructions, CI workflows,
+tests, run commands, README quality, PR templates, issue templates, basic
+secret-pattern hygiene, .env handling, agent boundaries, and governance structure.
+
+It can also generate starter AGENTS.md and GitHub Copilot instruction files.
+
+Repo:
+https://github.com/chevy155/agent-readiness
+
+I built it because before letting agents modify a repo, I wanted a simple
+deterministic way to know whether the repo gives them enough structure to work safely.
+```
 
 ---
 
