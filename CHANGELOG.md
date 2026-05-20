@@ -14,7 +14,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **12-check scanner** covering: AGENTS.md, copilot instructions, PR template, issue templates,
   CI workflow, test directory, run command, .env.example, no .env committed, README quality,
   no hardcoded secrets, and agent boundary file
-- **CLI entry point** `agent-scan [path]` via `pip install agent-readiness`
+- **CLI entry point** `agent-scan [path]` — install from source with `pip install -e .` (PyPI publish pending)
 - **Three output modes**: `--output terminal` (default), `--output json`, `--output markdown`
 - **File generation**: `--generate` flag creates missing `AGENTS.md` and
   `.github/copilot-instructions.md` from static templates; never overwrites existing files

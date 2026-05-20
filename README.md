@@ -8,8 +8,10 @@
 
 A deterministic readiness scanner for Cursor, GitHub Copilot, Claude Code, Codex, and local agents.
 
-```
-pip install agent-readiness
+```bash
+git clone https://github.com/chevy155/agent-readiness.git
+cd agent-readiness
+pip install -e .
 agent-scan .
 ```
 
@@ -52,14 +54,18 @@ Without this structure, agents burn tokens, make bad changes, and erode trust.
 ## Quick Install
 
 ```bash
-pip install agent-readiness
+git clone https://github.com/chevy155/agent-readiness.git
+cd agent-readiness
+pip install -e .
 ```
 
-Or run without installing:
+For development (includes pytest):
 
 ```bash
-pipx run agent-readiness
+pip install -e ".[dev]"
 ```
+
+> **PyPI:** `pip install agent-readiness` will work once the package is published to PyPI.
 
 ---
 
@@ -167,11 +173,13 @@ Weights sum to 27. Score = (earned weight / 27) × 100.
 ```yaml
 - name: Check agent readiness
   run: |
-    pip install agent-readiness
+    pip install git+https://github.com/chevy155/agent-readiness.git
     agent-scan . --fail-under 70
 ```
 
 This fails the job if your repo score drops below 70. Add it to any GitHub Actions workflow.
+
+> Once published to PyPI, replace with `pip install agent-readiness`.
 
 ---
 

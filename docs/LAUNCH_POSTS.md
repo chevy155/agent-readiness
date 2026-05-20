@@ -73,7 +73,9 @@ Humans can infer missing context. Agents cannot.
 It gives your repo a 0–100 score: does it have AGENTS.md, CI, tests, run commands, PR templates, and safe .env handling?
 
 ```
-pip install agent-readiness
+git clone https://github.com/chevy155/agent-readiness.git
+cd agent-readiness
+pip install -e .
 agent-scan .
 ```
 
@@ -122,7 +124,9 @@ No SaaS.
 No account.
 
 ```
-pip install agent-readiness
+git clone https://github.com/chevy155/agent-readiness.git
+cd agent-readiness
+pip install -e .
 agent-scan .
 ```
 
@@ -145,7 +149,9 @@ The motivation: I kept watching AI agents make bad decisions in repos that were 
 The tool runs 12 deterministic file-system checks (no LLM, no network) and gives a 0–100 score in under 3 seconds. It can also generate starter AGENTS.md and GitHub Copilot instruction files.
 
 ```bash
-pip install agent-readiness
+git clone https://github.com/chevy155/agent-readiness.git
+cd agent-readiness
+pip install -e .
 agent-scan .
 ```
 
@@ -168,7 +174,9 @@ Built a small open-source CLI that runs 12 static checks on a repo and tells you
 The focus: repos that work for local agents specifically — AGENTS.md, .env hygiene, documented test commands, CI, PR templates.
 
 ```bash
-pip install agent-readiness
+git clone https://github.com/chevy155/agent-readiness.git
+cd agent-readiness
+pip install -e .
 agent-scan .
 ```
 
@@ -205,7 +213,7 @@ Score is 0–100. Add to CI:
 ```yaml
 - name: Check agent readiness
   run: |
-    pip install agent-readiness
+    pip install git+https://github.com/chevy155/agent-readiness.git
     agent-scan . --fail-under 70
 ```
 

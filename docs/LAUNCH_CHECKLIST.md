@@ -107,7 +107,9 @@ gh release create v0.1.0 \
 
 ## Install
 \`\`\`
-pip install agent-readiness
+git clone https://github.com/chevy155/agent-readiness.git
+cd agent-readiness
+pip install -e .
 agent-scan .
 \`\`\`"
 ```
