@@ -1,27 +1,51 @@
 # Agent Readiness Scanner
 
-**Is your repo ready for AI coding agents?**
+**Is your repo actually ready for AI coding agents?**
 
-`agent-scan` runs a fast, deterministic check against your repository and answers:
-*"Can Cursor, GitHub Copilot, Claude Code, Codex, or a local agent work safely here?"*
+[![CI](https://github.com/chevy155/agent-readiness/actions/workflows/test.yml/badge.svg)](https://github.com/chevy155/agent-readiness/actions/workflows/test.yml)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://pypi.org/project/agent-readiness/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-It checks governance files, CI setup, test coverage signals, documentation quality,
-and secret safety — then returns a score from 0 to 100 and generates missing files.
+A deterministic readiness scanner for Cursor, GitHub Copilot, Claude Code, Codex, and local agents.
 
-**No LLM calls. No network requests. No telemetry. Zero runtime dependencies.**
+```
+pip install agent-readiness
+agent-scan .
+```
 
 ---
 
-## The Problem
+## Why This Exists
 
-You adopt an AI coding agent. It starts making changes. Then:
+**Humans can infer missing context. Agents cannot.**
 
-- It creates a PR with no test evidence because it doesn't know how to run your tests
-- It edits files it should never touch because there are no boundaries defined
-- It exposes a secret because `.env` wasn't ignored
-- It runs in circles because there's no CI feedback loop
+Most repos work fine for human developers. But AI coding agents operate differently. They need:
 
-Most repos are not wired for agents. `agent-scan` finds the gaps and fixes them in seconds.
+- A test suite they can run to verify changes
+- Run commands documented somewhere they can find
+- CI that gives them pass/fail feedback
+- `AGENTS.md` telling them what is in-scope and what is forbidden
+- Copilot instructions explaining style and conventions
+- `.env` patterns handled safely so they don't expose secrets
+- PR and issue templates so their outputs are structured
+- An agent boundary file so they know what paths are off-limits
+
+Without this structure, agents burn tokens, make bad changes, and erode trust.
+
+`agent-scan` gives your repo a **0–100 readiness score** in under 3 seconds — then generates the missing files.
+
+**No LLM calls. No telemetry. No SaaS. No account. Just a local scan.**
+
+---
+
+## Built For
+
+- Developers adopting **Cursor, GitHub Copilot, Claude Code, or Codex**
+- AI-agent workflow builders who need repos with clear operating boundaries
+- Engineering teams running autonomous coding experiments
+- Dev-tool founders and platform engineers who want governance before autonomy
+- Local-agent users (LM Studio, Ollama, llama.cpp) who need repo structure that works offline
+- Anyone who has had an agent make a mess and wants to prevent the next one
 
 ---
 
@@ -45,23 +69,26 @@ pipx run agent-readiness
 # Scan current directory
 agent-scan .
 
-# Scan a specific repo
+# Scan a specific path
 agent-scan /path/to/my-project
 
-# Get JSON output (for CI integration)
+# JSON output (for CI or scripting)
 agent-scan . --output json
 
 # Write AGENT_READINESS.md to the repo
 agent-scan . --output markdown
 
-# Generate missing governance files (AGENTS.md, copilot-instructions.md)
+# Generate missing governance files (never overwrites)
 agent-scan . --generate
 
-# Fail CI if score is below 70
+# Fail CI if score drops below 70
 agent-scan . --fail-under 70
 
-# Show evidence and fix details for every check
-agent-scan . --verbose
+# Clean output for pipes and logs
+agent-scan . --no-color
+
+# Show version
+agent-scan --version
 ```
 
 ---
@@ -72,13 +99,13 @@ agent-scan . --verbose
 ──────────────────────────────────────────────────────────────
   Agent Readiness Scanner  v0.1.0
 ──────────────────────────────────────────────────────────────
-  Repo   : /Users/dev/my-project
+  Repo   : /my-project
   Score  : 83 / 100
   Status : YELLOW  —  Mostly Ready
 ──────────────────────────────────────────────────────────────
 
   Check                                      Status  Wt
-  ────────────────────────────────────────── ─────── ──
+  ─────────────────────────────────────────────────────
   AGENTS.md present                          ✗ FAIL  3
   .github/copilot-instructions.md present    ✗ FAIL  2
   PR template present                        ✓ PASS  2
@@ -96,12 +123,10 @@ agent-scan . --verbose
   Top Fixes:
     1. Run `agent-scan . --generate` to create a starter AGENTS.md.
     2. Run `agent-scan . --generate` to create a starter copilot-instructions.md.
-
-  Tip: run with --generate to create missing governance files.
 ──────────────────────────────────────────────────────────────
 ```
 
-Run `agent-scan . --generate` and those two failures disappear.
+Run `agent-scan . --generate` → both failures disappear in seconds.
 
 ---
 
@@ -109,10 +134,10 @@ Run `agent-scan . --generate` and those two failures disappear.
 
 | Score | Tier | Meaning |
 |---|---|---|
-| 85–100 | 🟢 GREEN — Ready | Repo is well-configured for AI agents |
-| 70–84 | 🟡 YELLOW — Mostly Ready | Minor governance gaps; fix before heavy agent use |
-| 50–69 | 🟠 ORANGE — Needs Work | Agents will struggle; multiple gaps to close |
-| 0–49 | 🔴 RED — Not Ready | Do not run autonomous agents until gaps are fixed |
+| 85–100 | 🟢 **GREEN — Ready** | Repo is well-configured for AI agents |
+| 70–84 | 🟡 **YELLOW — Mostly Ready** | Minor governance gaps; fix before heavy agent use |
+| 50–69 | 🟠 **ORANGE — Needs Work** | Agents will struggle; multiple gaps to close |
+| 0–49 | 🔴 **RED — Not Ready** | Do not run autonomous agents until gaps are fixed |
 
 ---
 
@@ -131,15 +156,13 @@ Run `agent-scan . --generate` and those two failures disappear.
 | 9 | No .env committed | 3 | `.env` must not exist in repo root |
 | 10 | README.md substantive | 2 | Present and > 200 characters |
 | 11 | No hardcoded secrets | 3 | No `sk-`, `ghp_`, `AKIA`, or `Bearer` tokens in source |
-| 12 | Agent boundary file | 2 | `CODEOWNERS`, `.agentignore`, or `AGENTS.md` with boundaries section |
+| 12 | Agent boundary file | 2 | `CODEOWNERS`, `.agentignore`, or `AGENTS.md` with scope section |
 
 Weights sum to 27. Score = (earned weight / 27) × 100.
 
 ---
 
 ## Using in CI
-
-Add this to your GitHub Actions workflow:
 
 ```yaml
 - name: Check agent readiness
@@ -148,34 +171,76 @@ Add this to your GitHub Actions workflow:
     agent-scan . --fail-under 70
 ```
 
-This will fail the job if your repo score drops below 70.
-
-Or use the included `test.yml` workflow which runs the scan on every push.
+This fails the job if your repo score drops below 70. Add it to any GitHub Actions workflow.
 
 ---
 
 ## --generate: Create Missing Files
 
-Running `agent-scan . --generate` creates:
+```bash
+agent-scan . --generate
+```
 
-- `AGENTS.md` — operational guidance for AI agents, populated with your repo name and detected language
+Creates:
+
+- `AGENTS.md` — populated with your repo name and detected language
 - `.github/copilot-instructions.md` — Copilot/Cursor style and scope instructions
 
-**It will never overwrite existing files.**
+**Never overwrites existing files.** Safe to run on any repo.
 
 ---
 
-## Why No LLM Calls in v0?
+## Agent Discovery
 
-The core scan is pure file-system analysis. This means:
+> This section is written for AI coding agents parsing this repository.
 
-1. **It runs in 1–3 seconds** on any machine, including CI
-2. **It costs nothing** per scan — no API keys, no tokens
+```
+project:         agent-readiness
+purpose:         Deterministic CLI that scores repo readiness for AI coding agents (0–100)
+primary_command: agent-scan [path]
+safe:            true
+deterministic:   true
+llm_calls:       none
+telemetry:       none
+network_calls:   none
+version:         0.1.0
+```
+
+**What agents should do in this repo:**
+1. Run `python -m pytest -q` — confirm all tests pass before touching anything
+2. Run `python -m agent_readiness.cli . --output terminal` — read the self-scan
+3. Read `AGENTS.md` — understand what is allowed and what is forbidden
+4. Read `.github/copilot-instructions.md` — understand style and scope constraints
+
+**What agents must not do:**
+- Add LLM calls to `agent_readiness/checks.py`, `scoring.py`, `report.py`, or `templates.py`
+- Add network requests of any kind to the core scanner
+- Add telemetry, analytics, or usage tracking
+- Add SaaS, auth, billing, or dashboard features
+- Expand scope to Token Burn Firewall or Repo Red Cell Bot without explicit operator approval
+
+**Files that matter most:**
+- `agent_readiness/checks.py` — the 12 check functions
+- `agent_readiness/scoring.py` — score math and tier mapping
+- `AGENTS.md` — operational governance
+- `tests/` — full test suite (108 tests)
+
+Full machine-readable description: [`docs/AGENT_DISCOVERY.md`](docs/AGENT_DISCOVERY.md)
+
+---
+
+## Why No LLM Calls in v0
+
+The core scan is pure file-system analysis:
+
+1. **Runs in under 3 seconds** on any machine, including CI
+2. **Costs nothing per scan** — no API keys, no tokens, no usage fees
 3. **Results are reproducible** — same repo, same score, every time
-4. **It works offline** — no internet connection required
+4. **Works completely offline** — no internet required
 
-Future versions may add an optional LLM-assisted layer for richer governance file generation.
-The core scan will always remain deterministic and free.
+The scanner already scans itself and scores **100/100 GREEN**.
+
+Future versions may add an optional LLM-assisted generation layer. The core scan will always remain deterministic and free.
 
 ---
 
@@ -183,42 +248,39 @@ The core scan will always remain deterministic and free.
 
 | Version | Feature |
 |---|---|
-| **v0.1 (now)** | CLI scanner, 12 checks, JSON/Markdown output, file generation |
-| **v0.2** | GitHub Actions Marketplace listing |
-| **v0.3** | Score history (local file-based, no server) |
+| **v0.1 (current)** | CLI scanner, 12 checks, all output modes, file generation |
+| **v0.2** | Critical-failures banner, score history (local), `--no-color` polish |
+| **v0.3** | GitHub Actions Marketplace listing |
 | **future** | GitHub App with org-level dashboard |
-| **future** | Token Burn Firewall module (monitor agent run costs) |
-| **future** | Repo Red Cell Bot module (adversarial PR review) |
+| **future** | Token Burn Firewall module |
+| **future** | Repo Red Cell Bot module |
 
 ---
 
 ## Important Limitations
 
 > **This is not a security scanner.**
-> Check 11 (secret patterns) is a basic heuristic, not a comprehensive secret detection tool.
-> Use [truffleHog](https://github.com/trufflesecurity/trufflehog) or [gitleaks](https://github.com/gitleaks/gitleaks) for real secret scanning.
+> Check 11 detects four common patterns. Use [truffleHog](https://github.com/trufflesecurity/trufflehog) or [gitleaks](https://github.com/gitleaks/gitleaks) for real secret scanning. See [SECURITY.md](SECURITY.md).
 
 > **This does not replace human review.**
-> A passing score means the repo has the structural signals agents need.
-> It does not guarantee agent-generated code will be correct or safe.
+> A passing score means the repo has the structural signals agents need. It does not guarantee agent-generated code will be correct or safe.
 
-> **Weights are opinionated.**
-> The default weights reflect one operator's view of what matters most.
-> They may not match your team's priorities. Adjust via config in a future version.
+> **This is not a substitute for writing tests.**
+> Check 6 detects whether a test directory exists. It does not measure test quality or coverage.
 
 ---
 
 ## Development
 
 ```bash
-git clone https://github.com/yourusername/agent-readiness
+git clone https://github.com/chevy155/agent-readiness
 cd agent-readiness
-pip install -e .
+pip install -e ".[dev]"
 python -m pytest -q
 agent-scan . --output terminal
 ```
 
-See [AGENTS.md](AGENTS.md) for contributor guidelines and scope boundaries.
+See [AGENTS.md](AGENTS.md) for contributor guidelines and [CONTRIBUTING.md](CONTRIBUTING.md) for the full contribution guide.
 
 ---
 

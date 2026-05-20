@@ -1,6 +1,6 @@
 # External Repo Validation — Agent Readiness Scanner
 
-**Generated:** 2026-05-20 18:36 UTC  
+**Generated:** 2026-05-20 19:26 UTC  
 **Scanner version:** 0.1.0  
 **Method:** 5 local fixture repos representing real-world readiness levels  
 
