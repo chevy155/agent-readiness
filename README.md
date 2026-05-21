@@ -298,6 +298,16 @@ Full machine-readable description: [`docs/AGENT_DISCOVERY.md`](docs/AGENT_DISCOV
 
 ---
 
+## Agent and Evaluator Docs
+
+- [`docs/AGENT_INDEX.md`](docs/AGENT_INDEX.md) — concise machine-readable project classification
+- [`docs/AGENT_USE_CASES.md`](docs/AGENT_USE_CASES.md) — use cases for Cursor, Claude Code, Copilot, local agents, teams, and maintainers
+- [`docs/AGENT_PROMPTS.md`](docs/AGENT_PROMPTS.md) — prompts to use after running the scanner
+- [`docs/WHY_DETERMINISTIC.md`](docs/WHY_DETERMINISTIC.md) — why the core scan avoids LLM calls
+- [`docs/COMPETITIVE_POSITIONING.md`](docs/COMPETITIVE_POSITIONING.md) — how this differs from Claude, Cursor, Copilot, Codex, CodeRabbit, Qodo, SonarQube, and Graphite
+
+---
+
 ## Why No LLM Calls
 
 The core scan is pure file-system analysis:

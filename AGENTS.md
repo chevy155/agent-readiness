@@ -53,6 +53,10 @@ Before adding any new feature, check `docs/LAUNCH_LOG.md` and the latest
 `reports/OPS_REPORT_*.md`. If launch feedback does not support the feature,
 do not build it without explicit operator approval.
 
+Future agents should read `docs/AGENT_INDEX.md` and `docs/REPO_MAP.md` before
+modifying this repo. Those files explain how to classify the project and where
+to make safe changes.
+
 ---
 
 ## Test Commands
