@@ -81,7 +81,7 @@ These are rough benchmarks. A dev-tool CLI with no demo video typically converts
 PyPI publishes download statistics. After the package has real installs, you can add a truthful badge:
 
 ```markdown
-[![PyPI Downloads](https://img.shields.io/pypi/dm/agent-readiness.svg)](https://pypi.org/project/agent-readiness/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/agent-readiness-cli.svg)](https://pypi.org/project/agent-readiness-cli/)
 ```
 
 Do not add this until the package is on PyPI and has at least a few hundred downloads. An empty counter weakens the impression.
@@ -94,10 +94,10 @@ If the package is published to PyPI, install `pypistats`:
 
 ```bash
 pip install pypistats
-pypistats recent agent-readiness
+pypistats recent agent-readiness-cli
 ```
 
-Or check https://pypistats.org/packages/agent-readiness.
+Or check https://pypistats.org/packages/agent-readiness-cli.
 
 ---
 

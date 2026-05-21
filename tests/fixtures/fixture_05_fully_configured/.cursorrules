@@ -1,0 +1,3 @@
+Run tests before and after changes.
+Do not modify secrets or deployment configs without explicit approval.
+Keep edits scoped to requested files.

@@ -206,7 +206,7 @@ class TestMarkdownReportGeneration:
         assert "score" in data
         assert "tier" in data
         assert "checks" in data
-        assert len(data["checks"]) == 12
+        assert len(data["checks"]) == 17
 
 
 # ---------------------------------------------------------------------------
@@ -298,8 +298,8 @@ class TestCriticalFailureReporting:
         results = run_all_checks(fixture)
         score = compute_score(results)
 
-        assert score == 71.4
-        assert get_tier(score) == "YELLOW"
+        assert score == 59.5
+        assert get_tier(score) == "ORANGE"
 
         data = json.loads(render_json(results, str(fixture)))
         assert data["critical_failures_present"] is True

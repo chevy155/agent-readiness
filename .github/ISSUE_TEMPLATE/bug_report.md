@@ -32,7 +32,7 @@ agent-scan /path/to/repo --output terminal
 
 - OS:
 - Python version (`python --version`):
-- Package version (`agent-scan --version` or `pip show agent-readiness`):
+- Package version (`agent-scan --version` or `pip show agent-readiness-cli`):
 
 ## Repo Structure (relevant part)
 

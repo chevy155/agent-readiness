@@ -5,13 +5,13 @@
 [![CI](https://github.com/chevy155/agent-readiness/actions/workflows/test.yml/badge.svg)](https://github.com/chevy155/agent-readiness/actions/workflows/test.yml)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://github.com/chevy155/agent-readiness/blob/main/pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/chevy155/agent-readiness/blob/main/LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/agent-readiness.svg)](https://pypi.org/project/agent-readiness/)
+[![PyPI](https://img.shields.io/pypi/v/agent-readiness-cli.svg)](https://pypi.org/project/agent-readiness-cli/)
 
 Claude, Cursor, Copilot, Codex, and local agents can help modify a repo.
 Agent Readiness Scanner tells you whether the repo is structured enough before
 those agents touch it.
 
-It runs locally, checks 12 repo-governance signals, returns a **0–100 readiness
+It runs locally, checks 17 repo-governance signals, returns a **0–100 readiness
 score**, and now surfaces **critical failures** separately so serious issues
 cannot hide inside a decent score.
 
@@ -19,7 +19,7 @@ Output: terminal, JSON, or Markdown. Trust signal: deterministic checks, no LLM
 calls, no telemetry, no SaaS, no account.
 
 ```bash
-pip install agent-readiness
+pip install agent-readiness-cli
 agent-scan .
 ```
 
@@ -93,7 +93,7 @@ before using them:
 ## Quick Install
 
 ```bash
-pip install agent-readiness
+pip install agent-readiness-cli
 ```
 
 For development (clone and install with test dependencies):
@@ -140,7 +140,7 @@ agent-scan --version
 
 ```
 ──────────────────────────────────────────────────────────────
-  Agent Readiness Scanner  v0.2.0
+  Agent Readiness Scanner  v0.3.0
 ──────────────────────────────────────────────────────────────
   Repo   : /my-project
   Score  : 83 / 100
@@ -213,7 +213,7 @@ is YELLOW or GREEN.
 
 ---
 
-## The 12 Checks
+## The 17 Checks
 
 | # | Check | Weight | What it looks for |
 |---|---|---|---|
@@ -226,11 +226,16 @@ is YELLOW or GREEN.
 | 7 | Run command documented | 2 | Makefile, justfile, package.json scripts, or README |
 | 8 | .env.example present | 2 | If `.env` patterns detected, `.env.example` must exist |
 | 9 | No .env committed | 3 | `.env` must not exist in repo root |
-| 10 | README.md substantive | 2 | Present and > 200 characters |
-| 11 | No hardcoded secrets | 3 | No obvious `sk-`, `ghp_`, `AKIA`, or `Bearer` token patterns in source |
-| 12 | Agent boundary file | 2 | `CODEOWNERS`, `.agentignore`, or `AGENTS.md` with scope section |
+| 10 | Cursor rules present | 2 | `.cursorrules` or `.cursor/rules/*` |
+| 11 | Workspace handoff/current-state doc present | 2 | `CURRENT_STATE.md`, `HANDOFF.md`, `docs/HANDOFF.md`, etc. |
+| 12 | Test command explicit | 2 | Explicit test command in Makefile/justfile/package.json/pyproject |
+| 13 | Env contract pairing | 2 | `.env` patterns ignored + env example/template when `.env*` files exist |
+| 14 | Workspace handoff doc substantive | 1 | Handoff doc has meaningful content |
+| 15 | README.md substantive | 2 | Present and > 200 characters |
+| 16 | No hardcoded secrets | 3 | No obvious `sk-`, `ghp_`, `AKIA`, or `Bearer` token patterns in source |
+| 17 | Agent boundary file | 2 | `CODEOWNERS`, `.agentignore`, or `AGENTS.md` with scope section |
 
-Weights sum to 27. Score = (earned weight / 27) × 100.
+Weights sum to 36. Score = (earned weight / 36) × 100.
 
 ---
 
@@ -239,7 +244,7 @@ Weights sum to 27. Score = (earned weight / 27) × 100.
 ```yaml
 - name: Check agent readiness
   run: |
-    pip install agent-readiness
+    pip install agent-readiness-cli
     agent-scan . --fail-under 70
 ```
 
@@ -279,7 +284,7 @@ llm_calls:       none
 telemetry:       none
 network_calls:   none
 critical_layer:  true
-version:         0.2.0
+version:         0.3.0
 ```
 
 **What agents should do in this repo:**
@@ -296,7 +301,7 @@ version:         0.2.0
 - Expand scope to Token Burn Firewall or Repo Red Cell Bot without explicit operator approval
 
 **Files that matter most:**
-- `agent_readiness/checks.py` — the 12 check functions
+- `agent_readiness/checks.py` — deterministic readiness check functions
 - `agent_readiness/scoring.py` — score math and tier mapping
 - `agent_readiness/report.py` — terminal, JSON, Markdown, and critical failure output
 - `AGENTS.md` — operational governance
@@ -336,8 +341,9 @@ not weaken this trust boundary.
 
 | Version | Feature |
 |---|---|
-| **v0.1** | CLI scanner, 12 checks, all output modes, file generation |
-| **v0.2 (current)** | Critical failures banner, positioning upgrade, agent preflight doctrine |
+| **v0.1** | CLI scanner, foundational readiness checks, all output modes, file generation |
+| **v0.2** | Critical failures banner, positioning upgrade, agent preflight doctrine |
+| **v0.3 (current)** | Agent workspace readiness checks: Cursor rules, handoff continuity, explicit test command, env contract pairing |
 | **next likely** | GitHub Action polish, improved scoring model, more secret patterns, config file support |
 | **future only** | GitHub App with org-level dashboard |
 | **future** | Token Burn Firewall module |

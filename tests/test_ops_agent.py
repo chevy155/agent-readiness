@@ -38,7 +38,7 @@ from ops_agent import (
 # ---------------------------------------------------------------------------
 
 SAMPLE_FEEDBACK = """\
-I tried to install it but pip install agent-readiness fails because it's not on pypi yet.
+I tried to install it but pip install agent-readiness-cli fails because it's not on pypi yet.
 The windows terminal shows a weird error with encoding.
 I got a false positive on the secret check — my README has a Bearer example.
 Would be great to have a docker image for CI.

@@ -14,7 +14,7 @@ test coverage signals, documentation, and safety patterns.
 The product goal is a self-serve, hands-off tool. It must require no consulting, no manual
 intervention, and no external services to reach first value.
 
-**Current version: v0.2.0 — CLI only.**
+**Current version: v0.3.0 — CLI only.**
 
 v0.2 priority is bounded: critical-failure visibility and positioning clarity
 only. Do not expand the product while working this release.

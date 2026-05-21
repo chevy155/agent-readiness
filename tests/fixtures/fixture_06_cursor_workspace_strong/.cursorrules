@@ -1,0 +1,3 @@
+Always run tests before reporting completion.
+Do not change auth or secrets files without explicit approval.
+Keep edits scoped to requested paths.

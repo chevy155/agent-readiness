@@ -32,7 +32,7 @@ GitHub App, Slack integration, or any external API. These are future scope items
 
 ```
 agent_readiness/
-  checks.py    — 12 deterministic check functions, each returns CheckResult TypedDict
+  checks.py    — 17 deterministic check functions, each returns CheckResult TypedDict
   scoring.py   — compute_score(), get_tier(), get_recommendations() — pure math
   report.py    — render_terminal(), render_json(), render_markdown() — pure rendering
   templates.py — generate_agents_md(), generate_copilot_instructions() — file generation
@@ -63,7 +63,7 @@ python -m pytest tests/test_checks.py -v
 
 ---
 
-## What This Repo Scans For (the 12 checks)
+## What This Repo Scans For (the 17 checks)
 
 1. AGENTS.md present
 2. .github/copilot-instructions.md present
@@ -74,6 +74,11 @@ python -m pytest tests/test_checks.py -v
 7. Run command documented
 8. .env.example present if needed
 9. No .env committed
-10. README.md substantive (>200 chars)
-11. No hardcoded secret patterns
-12. Agent boundary file present
+10. Cursor rules present
+11. Workspace handoff/current-state doc present
+12. Test command explicit
+13. Env contract pairing
+14. Workspace handoff doc substantive
+15. README.md substantive (>200 chars)
+16. No hardcoded secret patterns
+17. Agent boundary file present

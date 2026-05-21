@@ -8,10 +8,11 @@
 
 ## Executive Summary
 
-`agent-readiness` is build-ready and PyPI-ready. All artifacts pass `twine check`. The entry point
+`agent-readiness-cli` is build-ready and PyPI-ready. All artifacts pass `twine check`. The entry point
 works correctly from a clean wheel install. 197 tests pass. The repo self-scans 100/100 GREEN.
 
-The package name `agent-readiness` is not yet claimed on PyPI. The operator must upload with
+The package name `agent-readiness` is owned by another PyPI project and rejected upload for `chevy155`.
+The distribution has been repointed to `agent-readiness-cli`. The operator must upload with
 `twine upload dist/*` to publish. No further code changes are needed.
 
 ---
@@ -20,12 +21,12 @@ The package name `agent-readiness` is not yet claimed on PyPI. The operator must
 
 **What changed:**
 - `pyproject.toml` metadata upgraded: `authors`, explicit `readme` content-type, `Source`, `Changelog`, `Documentation` URLs added, license field modernized to SPDX string format, `Development Status` bumped from Alpha to Beta.
-- `README.md` badge links fixed (two relative links → absolute GitHub URLs). PyPI badge added. Install instructions updated to `pip install agent-readiness` throughout.
-- `docs/LAUNCH_POSTS.md` updated: all install code blocks switched from `git clone` to `pip install agent-readiness`.
+- `README.md` badge links fixed (two relative links → absolute GitHub URLs). PyPI badge updated to `agent-readiness-cli`. Install instructions updated to `pip install agent-readiness-cli` throughout.
+- `docs/LAUNCH_POSTS.md` updated: install code blocks switched from `pip install agent-readiness` to `pip install agent-readiness-cli`.
 - `docs/PYPI_RELEASE.md` created: step-by-step release guide including TestPyPI flow, token auth, and optional CI/CD automation.
 
 **Why it matters:**
-PyPI is the bridge from "interesting GitHub repo" to "usable developer tool." The install friction drops from 3 steps (clone, cd, pip install -e .) to 1 line: `pip install agent-readiness`. This is the cleanest distribution path for a CLI tool and removes the biggest adoption barrier.
+PyPI is the bridge from "interesting GitHub repo" to "usable developer tool." The install friction drops from 3 steps (clone, cd, pip install -e .) to 1 line: `pip install agent-readiness-cli`. This is the cleanest distribution path for a CLI tool and removes the biggest adoption barrier.
 
 **What is now stronger:**
 The package is production-grade: clean build, PASSED metadata validation, clean-venv verification, and a documented release process. Future maintainers and CI automation have a clear path.
@@ -72,9 +73,9 @@ agent-scan . --output terminal --no-color → 100/100 GREEN
 ```
 
 **Risk areas:**
-- PyPI name availability: `agent-readiness` has not yet been claimed. If someone registers it first, you will get an error on first upload. The fix is to upload before announcing.
+- PyPI name ownership: `agent-readiness` is already owned and rejects uploads from `chevy155`. Use `agent-readiness-cli` for this release.
 - Token management: PyPI API token must be kept private. Use a project-scoped token.
-- The `--fail-under` CI instruction in the README now uses `pip install agent-readiness` — this will fail until the PyPI upload happens. Consider keeping the git+https fallback in a note until upload is confirmed.
+- The `--fail-under` CI instruction in the README now uses `pip install agent-readiness-cli` — this will fail until the renamed PyPI upload happens.
 
 ---
 
@@ -85,8 +86,8 @@ agent-scan . --output terminal --no-color → 100/100 GREEN
 | File | Change |
 |---|---|
 | `pyproject.toml` | `authors`, explicit readme, SPDX license, `license-files`, `Source`/`Changelog`/`Documentation` URLs, `setuptools>=77`, Beta status, expanded keywords |
-| `README.md` | Badges fixed (2 relative → absolute), PyPI badge added, hero install → `pip install agent-readiness`, Quick Install section updated, CI section updated, Roadmap updated |
-| `docs/LAUNCH_POSTS.md` | 4 install blocks updated to `pip install agent-readiness` |
+| `README.md` | Badges fixed (2 relative → absolute), PyPI badge updated, hero install → `pip install agent-readiness-cli`, Quick Install section updated, CI section updated, Roadmap updated |
+| `docs/LAUNCH_POSTS.md` | 4 install blocks updated to `pip install agent-readiness-cli` |
 | `docs/PYPI_RELEASE.md` | New file — step-by-step release guide |
 | `reports/PYPI_RELEASE_READINESS.md` | This file |
 
@@ -130,7 +131,7 @@ python -m pytest -q                              # → 197 passed
 3. **Optional: test on TestPyPI first** (recommended for first publish):
    ```bash
    python -m twine upload --repository testpypi dist/*
-   pip install --index-url https://test.pypi.org/simple/ agent-readiness
+   pip install --index-url https://test.pypi.org/simple/ agent-readiness-cli
    agent-scan --version
    ```
 4. **Upload to live PyPI:**
@@ -139,10 +140,10 @@ python -m pytest -q                              # → 197 passed
    # Username: __token__
    # Password: pypi-YOUR_TOKEN_HERE
    ```
-5. **Confirm live page:** https://pypi.org/project/agent-readiness/
+5. **Confirm live page:** https://pypi.org/project/agent-readiness-cli/
 6. **Test live install:**
    ```bash
-   pip install agent-readiness
+   pip install agent-readiness-cli
    agent-scan --version
    agent-scan . --output terminal --no-color
    ```

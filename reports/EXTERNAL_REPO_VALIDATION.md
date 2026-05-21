@@ -1,8 +1,8 @@
 # External Repo Validation — Agent Readiness Scanner
 
-**Generated:** 2026-05-20 23:45 UTC  
+**Generated:** 2026-05-21 21:21 UTC  
 **Scanner version:** 0.2.0  
-**Method:** 5 local fixture repos representing real-world readiness levels  
+**Method:** local fixture repos representing real-world readiness levels  
 
 ---
 
@@ -10,11 +10,15 @@
 
 | Fixture | Score | Tier | Expected | Pass |
 |---|---|---|---|---|
-| Fixture 1 — Bare Readme Only | 29/100 | RED — Not Ready | RED | ✅ |
-| Fixture 2 — Python Project, No Governance | 50/100 | ORANGE — Needs Work | ORANGE | ✅ |
-| Fixture 3 — Node.js Project, Partial Setup | 71/100 | YELLOW — Mostly Ready | YELLOW | ✅ |
-| Fixture 4 — Good Structure, Critical Security Failures | 71/100 | YELLOW — Mostly Ready | YELLOW | ✅ |
+| Fixture 1 — Bare Readme Only | 27/100 | RED — Not Ready | RED | ✅ |
+| Fixture 2 — Python Project, No Governance | 49/100 | RED — Not Ready | RED | ✅ |
+| Fixture 3 — Node.js Project, Partial Setup | 65/100 | ORANGE — Needs Work | ORANGE | ✅ |
+| Fixture 4 — Good Structure, Critical Security Failures | 60/100 | ORANGE — Needs Work | ORANGE | ✅ |
 | Fixture 5 — Fully Configured | 100/100 | GREEN — Ready | GREEN | ✅ |
+| Fixture 6 — Cursor Workspace Strong | 95/100 | GREEN — Ready | GREEN | ✅ |
+| Fixture 7 — Cursor Rules Missing | 68/100 | ORANGE — Needs Work | ORANGE | ✅ |
+| Fixture 8 — Handoff Missing | 65/100 | ORANGE — Needs Work | ORANGE | ✅ |
+| Fixture 9 — Env Contract Broken | 68/100 | ORANGE — Needs Work | ORANGE | ✅ |
 
 ---
 
@@ -24,7 +28,7 @@
 
 | Score | Tier | Critical Failures | Expected | Match |
 |---|---|---|---|---|
-| **29 / 100** | **RED — Not Ready** | **0** | RED | ✅ |
+| **27 / 100** | **RED — Not Ready** | **0** | RED | ✅ |
 
 | Check | Status | Weight | Evidence |
 |---|---|---|---|
@@ -37,6 +41,11 @@
 | Run command documented | ❌ FAIL | 2 | No Makefile, justfile, package.json scripts, or pyproject.toml test config found |
 | .env.example present (if needed) | ✅ PASS | 2 | No .env-like files detected — check not applicable |
 | No .env file committed | ✅ PASS | 3 | .env file not found in repo root |
+| Cursor rules present | ❌ FAIL | 2 | No .cursorrules or .cursor/rules/* file found |
+| Workspace handoff/current-state doc present | ❌ FAIL | 2 | No CURRENT_STATE/HANDOFF/session notes doc found in root or docs/ |
+| Test command explicit | ❌ FAIL | 2 | No explicit test command found in Makefile/justfile/package.json/pyproject.toml |
+| Env contract pairing | ✅ PASS | 2 | No .env-like runtime files detected — check not applicable |
+| Workspace handoff doc substantive | ❌ FAIL | 1 | No handoff/current-state doc available to assess substance |
 | README.md present and substantive | ❌ FAIL | 2 | README.md found but nearly empty (24 characters) |
 | No hardcoded secret patterns | ✅ PASS | 3 | No obvious secret patterns detected in non-test source files |
 | Agent boundary file present | ❌ FAIL | 2 | No CODEOWNERS, .agentignore, or AGENTS.md with boundary section found |
@@ -55,7 +64,7 @@
 
 | Score | Tier | Critical Failures | Expected | Match |
 |---|---|---|---|---|
-| **50 / 100** | **ORANGE — Needs Work** | **0** | ORANGE | ✅ |
+| **49 / 100** | **RED — Not Ready** | **0** | RED | ✅ |
 
 | Check | Status | Weight | Evidence |
 |---|---|---|---|
@@ -68,6 +77,11 @@
 | Run command documented | ✅ PASS | 2 | Found pyproject.toml with pytest or scripts configuration |
 | .env.example present (if needed) | ✅ PASS | 2 | No .env-like files detected — check not applicable |
 | No .env file committed | ✅ PASS | 3 | .env not present; .gitignore includes .env pattern |
+| Cursor rules present | ❌ FAIL | 2 | No .cursorrules or .cursor/rules/* file found |
+| Workspace handoff/current-state doc present | ❌ FAIL | 2 | No CURRENT_STATE/HANDOFF/session notes doc found in root or docs/ |
+| Test command explicit | ✅ PASS | 2 | Found pyproject.toml with pytest configuration |
+| Env contract pairing | ✅ PASS | 2 | No .env-like runtime files detected — check not applicable |
+| Workspace handoff doc substantive | ❌ FAIL | 1 | No handoff/current-state doc available to assess substance |
 | README.md present and substantive | ⚠️ WARN | 2 | README.md found but brief (429 characters) |
 | No hardcoded secret patterns | ✅ PASS | 3 | No obvious secret patterns detected in non-test source files |
 | Agent boundary file present | ❌ FAIL | 2 | No CODEOWNERS, .agentignore, or AGENTS.md with boundary section found |
@@ -86,7 +100,7 @@
 
 | Score | Tier | Critical Failures | Expected | Match |
 |---|---|---|---|---|
-| **71 / 100** | **YELLOW — Mostly Ready** | **0** | YELLOW | ✅ |
+| **65 / 100** | **ORANGE — Needs Work** | **0** | ORANGE | ✅ |
 
 | Check | Status | Weight | Evidence |
 |---|---|---|---|
@@ -99,6 +113,11 @@
 | Run command documented | ✅ PASS | 2 | Found package.json with scripts.test or scripts.start |
 | .env.example present (if needed) | ✅ PASS | 2 | No .env-like files detected — check not applicable |
 | No .env file committed | ✅ PASS | 3 | .env not present; .gitignore includes .env pattern |
+| Cursor rules present | ❌ FAIL | 2 | No .cursorrules or .cursor/rules/* file found |
+| Workspace handoff/current-state doc present | ❌ FAIL | 2 | No CURRENT_STATE/HANDOFF/session notes doc found in root or docs/ |
+| Test command explicit | ✅ PASS | 2 | Found package.json scripts.test |
+| Env contract pairing | ✅ PASS | 2 | No .env-like runtime files detected — check not applicable |
+| Workspace handoff doc substantive | ❌ FAIL | 1 | No handoff/current-state doc available to assess substance |
 | README.md present and substantive | ✅ PASS | 2 | README.md found (743 characters) |
 | No hardcoded secret patterns | ✅ PASS | 3 | No obvious secret patterns detected in non-test source files |
 | Agent boundary file present | ❌ FAIL | 2 | No CODEOWNERS, .agentignore, or AGENTS.md with boundary section found |
@@ -107,7 +126,7 @@
 
 1. Run `agent-scan . --generate` to create a starter AGENTS.md.
 2. Run `agent-scan . --generate` to create a starter copilot-instructions.md.
-3. Add CODEOWNERS or a 'Forbidden Changes' section to AGENTS.md.
+3. Add .cursorrules or .cursor/rules/ with project-specific agent constraints.
 
 ---
 
@@ -117,7 +136,7 @@
 
 | Score | Tier | Critical Failures | Expected | Match |
 |---|---|---|---|---|
-| **71 / 100** | **YELLOW — Mostly Ready** | **2** | YELLOW | ✅ |
+| **60 / 100** | **ORANGE — Needs Work** | **2** | ORANGE | ✅ |
 
 > **Product Insight:** Score stays YELLOW despite two critical failures because weight-based scoring spreads impact. v0.2 fixes the visibility gap by surfacing critical failures separately from the score.
 
@@ -139,6 +158,11 @@
 | Run command documented | ✅ PASS | 2 | Found pyproject.toml with pytest or scripts configuration |
 | .env.example present (if needed) | ⚠️ WARN | 2 | .env-like file(s) found (.env) but no .env.example exists |
 | No .env file committed | ❌ FAIL | 3 | .env file found in repo root — may contain real secrets |
+| Cursor rules present | ❌ FAIL | 2 | No .cursorrules or .cursor/rules/* file found |
+| Workspace handoff/current-state doc present | ❌ FAIL | 2 | No CURRENT_STATE/HANDOFF/session notes doc found in root or docs/ |
+| Test command explicit | ✅ PASS | 2 | Found pyproject.toml with pytest configuration |
+| Env contract pairing | ❌ FAIL | 2 | .env-like file(s) found (.env) but .gitignore does not protect .env patterns |
+| Workspace handoff doc substantive | ❌ FAIL | 1 | No handoff/current-state doc available to assess substance |
 | README.md present and substantive | ⚠️ WARN | 2 | README.md found but brief (468 characters) |
 | No hardcoded secret patterns | ❌ FAIL | 3 | Potential secrets in 1 file(s): src\config.py: OpenAI/Anthropic API key (sk-) |
 | Agent boundary file present | ✅ PASS | 2 | AGENTS.md contains boundary/scope keywords |
@@ -147,7 +171,7 @@
 
 1. Remove .env from the repo immediately and add it to .gitignore.
 2. Remove hardcoded secrets and use environment variables or a secrets manager.
-3. Add .env.example with placeholder values to document required variables.
+3. Add .cursorrules or .cursor/rules/ with project-specific agent constraints.
 
 ---
 
@@ -170,9 +194,156 @@
 | Run command documented | ✅ PASS | 2 | Found Makefile with `test` target |
 | .env.example present (if needed) | ✅ PASS | 2 | No .env-like files detected — check not applicable |
 | No .env file committed | ✅ PASS | 3 | .env not present; .gitignore includes .env pattern |
-| README.md present and substantive | ✅ PASS | 2 | README.md found (653 characters) |
+| Cursor rules present | ✅ PASS | 2 | Found .cursorrules (148 bytes) |
+| Workspace handoff/current-state doc present | ✅ PASS | 2 | Found handoff/current-state doc(s): CURRENT_STATE.md |
+| Test command explicit | ✅ PASS | 2 | Found Makefile with explicit `test` target |
+| Env contract pairing | ✅ PASS | 2 | No .env-like runtime files detected — check not applicable |
+| Workspace handoff doc substantive | ✅ PASS | 1 | CURRENT_STATE.md appears substantive (284 bytes) |
+| README.md present and substantive | ✅ PASS | 2 | README.md found (796 characters) |
 | No hardcoded secret patterns | ✅ PASS | 3 | No obvious secret patterns detected in non-test source files |
 | Agent boundary file present | ✅ PASS | 2 | Found CODEOWNERS at CODEOWNERS |
+
+---
+
+## Fixture 6 — Cursor Workspace Strong
+
+**Description:** Full governance plus Cursor rules, explicit handoff doc, explicit test command, and safe env contract pairing.
+
+| Score | Tier | Critical Failures | Expected | Match |
+|---|---|---|---|---|
+| **95 / 100** | **GREEN — Ready** | **0** | GREEN | ✅ |
+
+| Check | Status | Weight | Evidence |
+|---|---|---|---|
+| AGENTS.md present | ✅ PASS | 3 | Found AGENTS.md (273 bytes) |
+| .github/copilot-instructions.md present | ✅ PASS | 2 | Found .github/copilot-instructions.md (167 bytes) |
+| PR template present | ✅ PASS | 2 | Found .github/pull_request_template.md |
+| Issue templates present | ✅ PASS | 1 | Found 1 template(s) in .github/ISSUE_TEMPLATE/ |
+| CI workflow present | ✅ PASS | 3 | Found 1 workflow(s): ci.yml |
+| Test directory present | ✅ PASS | 3 | Found tests/ with 1 test file(s) |
+| Run command documented | ✅ PASS | 2 | Found pyproject.toml with pytest or scripts configuration |
+| .env.example present (if needed) | ✅ PASS | 2 | Found example file alongside .env-like files |
+| No .env file committed | ✅ PASS | 3 | .env not present; .gitignore includes .env pattern |
+| Cursor rules present | ✅ PASS | 2 | Found .cursorrules (150 bytes) |
+| Workspace handoff/current-state doc present | ✅ PASS | 2 | Found handoff/current-state doc(s): CURRENT_STATE.md |
+| Test command explicit | ✅ PASS | 2 | Found pyproject.toml with pytest configuration |
+| Env contract pairing | ✅ PASS | 2 | .env-like files detected; .gitignore protects .env and example/template file is present |
+| Workspace handoff doc substantive | ✅ PASS | 1 | CURRENT_STATE.md appears substantive (268 bytes) |
+| README.md present and substantive | ❌ FAIL | 2 | README.md found but nearly empty (194 characters) |
+| No hardcoded secret patterns | ✅ PASS | 3 | No obvious secret patterns detected in non-test source files |
+| Agent boundary file present | ✅ PASS | 2 | AGENTS.md contains boundary/scope keywords |
+
+**Top Fixes:**
+
+1. Expand README.md with meaningful content (minimum 200 characters).
+
+---
+
+## Fixture 7 — Cursor Rules Missing
+
+**Description:** Strong governance and testability, but missing .cursorrules/.cursor/rules agent policy.
+
+| Score | Tier | Critical Failures | Expected | Match |
+|---|---|---|---|---|
+| **68 / 100** | **ORANGE — Needs Work** | **0** | ORANGE | ✅ |
+
+| Check | Status | Weight | Evidence |
+|---|---|---|---|
+| AGENTS.md present | ✅ PASS | 3 | Found AGENTS.md (239 bytes) |
+| .github/copilot-instructions.md present | ❌ FAIL | 2 | .github/copilot-instructions.md not found |
+| PR template present | ❌ FAIL | 2 | .github/pull_request_template.md not found |
+| Issue templates present | ❌ FAIL | 1 | .github/ISSUE_TEMPLATE/ not found or empty |
+| CI workflow present | ❌ FAIL | 3 | .github/workflows/*.yml not found |
+| Test directory present | ✅ PASS | 3 | Found tests/ with 1 test file(s) |
+| Run command documented | ✅ PASS | 2 | Found pyproject.toml with pytest or scripts configuration |
+| .env.example present (if needed) | ✅ PASS | 2 | Found example file alongside .env-like files |
+| No .env file committed | ✅ PASS | 3 | .env not present; .gitignore includes .env pattern |
+| Cursor rules present | ❌ FAIL | 2 | No .cursorrules or .cursor/rules/* file found |
+| Workspace handoff/current-state doc present | ✅ PASS | 2 | Found handoff/current-state doc(s): CURRENT_STATE.md |
+| Test command explicit | ✅ PASS | 2 | Found pyproject.toml with pytest configuration |
+| Env contract pairing | ✅ PASS | 2 | .env-like files detected; .gitignore protects .env and example/template file is present |
+| Workspace handoff doc substantive | ✅ PASS | 1 | CURRENT_STATE.md appears substantive (184 bytes) |
+| README.md present and substantive | ❌ FAIL | 2 | README.md found but nearly empty (110 characters) |
+| No hardcoded secret patterns | ✅ PASS | 3 | No obvious secret patterns detected in non-test source files |
+| Agent boundary file present | ✅ PASS | 2 | AGENTS.md contains boundary/scope keywords |
+
+**Top Fixes:**
+
+1. Add a GitHub Actions workflow that runs your test suite on push.
+2. Run `agent-scan . --generate` to create a starter copilot-instructions.md.
+3. Add .github/pull_request_template.md with a checklist for reviewers.
+
+---
+
+## Fixture 8 — Handoff Missing
+
+**Description:** Strong workspace setup without current-state/handoff continuity docs.
+
+| Score | Tier | Critical Failures | Expected | Match |
+|---|---|---|---|---|
+| **65 / 100** | **ORANGE — Needs Work** | **0** | ORANGE | ✅ |
+
+| Check | Status | Weight | Evidence |
+|---|---|---|---|
+| AGENTS.md present | ✅ PASS | 3 | Found AGENTS.md (214 bytes) |
+| .github/copilot-instructions.md present | ❌ FAIL | 2 | .github/copilot-instructions.md not found |
+| PR template present | ❌ FAIL | 2 | .github/pull_request_template.md not found |
+| Issue templates present | ❌ FAIL | 1 | .github/ISSUE_TEMPLATE/ not found or empty |
+| CI workflow present | ❌ FAIL | 3 | .github/workflows/*.yml not found |
+| Test directory present | ✅ PASS | 3 | Found tests/ with 1 test file(s) |
+| Run command documented | ✅ PASS | 2 | Found pyproject.toml with pytest or scripts configuration |
+| .env.example present (if needed) | ✅ PASS | 2 | Found example file alongside .env-like files |
+| No .env file committed | ✅ PASS | 3 | .env not present; .gitignore includes .env pattern |
+| Cursor rules present | ✅ PASS | 2 | Found .cursorrules (99 bytes) |
+| Workspace handoff/current-state doc present | ❌ FAIL | 2 | No CURRENT_STATE/HANDOFF/session notes doc found in root or docs/ |
+| Test command explicit | ✅ PASS | 2 | Found pyproject.toml with pytest configuration |
+| Env contract pairing | ✅ PASS | 2 | .env-like files detected; .gitignore protects .env and example/template file is present |
+| Workspace handoff doc substantive | ❌ FAIL | 1 | No handoff/current-state doc available to assess substance |
+| README.md present and substantive | ❌ FAIL | 2 | README.md found but nearly empty (107 characters) |
+| No hardcoded secret patterns | ✅ PASS | 3 | No obvious secret patterns detected in non-test source files |
+| Agent boundary file present | ✅ PASS | 2 | AGENTS.md contains boundary/scope keywords |
+
+**Top Fixes:**
+
+1. Add a GitHub Actions workflow that runs your test suite on push.
+2. Run `agent-scan . --generate` to create a starter copilot-instructions.md.
+3. Add .github/pull_request_template.md with a checklist for reviewers.
+
+---
+
+## Fixture 9 — Env Contract Broken
+
+**Description:** Contains .env-like runtime files but .gitignore is missing .env protections, triggering env contract pairing failure.
+
+| Score | Tier | Critical Failures | Expected | Match |
+|---|---|---|---|---|
+| **68 / 100** | **ORANGE — Needs Work** | **0** | ORANGE | ✅ |
+
+| Check | Status | Weight | Evidence |
+|---|---|---|---|
+| AGENTS.md present | ✅ PASS | 3 | Found AGENTS.md (165 bytes) |
+| .github/copilot-instructions.md present | ❌ FAIL | 2 | .github/copilot-instructions.md not found |
+| PR template present | ❌ FAIL | 2 | .github/pull_request_template.md not found |
+| Issue templates present | ❌ FAIL | 1 | .github/ISSUE_TEMPLATE/ not found or empty |
+| CI workflow present | ❌ FAIL | 3 | .github/workflows/*.yml not found |
+| Test directory present | ✅ PASS | 3 | Found tests/ with 1 test file(s) |
+| Run command documented | ✅ PASS | 2 | Found pyproject.toml with pytest or scripts configuration |
+| .env.example present (if needed) | ✅ PASS | 2 | Found example file alongside .env-like files |
+| No .env file committed | ✅ PASS | 3 | .env file not found in repo root |
+| Cursor rules present | ✅ PASS | 2 | Found .cursorrules (59 bytes) |
+| Workspace handoff/current-state doc present | ✅ PASS | 2 | Found handoff/current-state doc(s): CURRENT_STATE.md |
+| Test command explicit | ✅ PASS | 2 | Found pyproject.toml with pytest configuration |
+| Env contract pairing | ❌ FAIL | 2 | .env-like file(s) found (.env.local) but .gitignore does not protect .env patterns |
+| Workspace handoff doc substantive | ✅ PASS | 1 | CURRENT_STATE.md appears substantive (142 bytes) |
+| README.md present and substantive | ❌ FAIL | 2 | README.md found but nearly empty (115 characters) |
+| No hardcoded secret patterns | ✅ PASS | 3 | No obvious secret patterns detected in non-test source files |
+| Agent boundary file present | ✅ PASS | 2 | AGENTS.md contains boundary/scope keywords |
+
+**Top Fixes:**
+
+1. Add a GitHub Actions workflow that runs your test suite on push.
+2. Run `agent-scan . --generate` to create a starter copilot-instructions.md.
+3. Add .github/pull_request_template.md with a checklist for reviewers.
 
 ---
 
@@ -200,6 +371,6 @@ A 5-check failure on the highest-weight checks (weight 3) costs ~55 points. The 
 
 ## Verdict
 
-All 5 fixture tiers matched expectations. The scoring system produces honest results on realistic repos. v0.2 now surfaces critical failures separately so a YELLOW score cannot hide committed `.env` files or hardcoded secret-pattern findings.
+Fixture tiers matched expected readiness patterns across governance, workspace policy, handoff continuity, and env contract checks. The scoring system remains deterministic and critical failures still surface separately from the numeric score.
 
 **Scanner is ready for public release.**

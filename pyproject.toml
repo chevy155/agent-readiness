@@ -3,8 +3,8 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agent-readiness"
-version = "0.2.0"
+name = "agent-readiness-cli"
+version = "0.3.0"
 description = "Deterministic CLI that scans a repository for AI coding agent readiness"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = "MIT"

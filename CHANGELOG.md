@@ -7,6 +7,38 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.3.0] — 2026-05-21
+
+### Added
+
+- **Agent Workspace Readiness expansion** while preserving deterministic local scanning.
+- **17 checks total** (up from 12).
+- **Cursor rules detection** via `.cursorrules` or `.cursor/rules/*`.
+- **Workspace continuity checks** for handoff/current-state docs and substantive handoff content.
+- **Explicit test command detection** across Makefile/justfile/package.json/pyproject signals.
+- **Env contract pairing check** with stronger safety semantics:
+  - fail when `.env`-like files exist and `.gitignore` lacks `.env` protection
+  - warn when ignore is correct but no env example/template exists
+  - pass when both ignore + example/template are present
+- **New fixture repos 06–09** for workspace-strong, cursor-rules-missing, handoff-missing, and env-contract-broken scenarios.
+
+### Changed
+
+- Version bumped to `0.3.0`.
+- Total scoring weight increased to **36** with existing weighted normalization preserved.
+- Fixture validation and docs updated to reflect workspace-readiness semantics.
+- Test suite expanded to **218 passing tests**.
+
+### Unchanged
+
+- No runtime dependencies.
+- No LLM calls.
+- No network calls in scanner core.
+- No telemetry.
+- Critical-failure set remains unchanged (`no_env_committed`, `no_secrets`).
+
+---
+
 ## [0.2.0] — 2026-05-20
 
 ### Added

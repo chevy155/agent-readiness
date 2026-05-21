@@ -211,7 +211,7 @@ All commands work. All tests pass. The repo self-certifies as agent-ready.
 
 **CEO verdict:**  
 Scope held. No SaaS, no dashboard, no billing, no LLM calls. The README explains the product
-clearly and honestly. The self-serve path is direct: `pip install agent-readiness` → `agent-scan .`.
+clearly and honestly. The self-serve path is direct: `pip install agent-readiness-cli` → `agent-scan .`.
 The roadmap in the README sets up the next two product layers without overpromising.
 
 **CTO verdict:**  

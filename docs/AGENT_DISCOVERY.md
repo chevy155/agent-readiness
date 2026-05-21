@@ -11,7 +11,7 @@
 repository:      agent-readiness
 owner:           chevy155
 url:             https://github.com/chevy155/agent-readiness
-version:         0.2.0
+version:         0.3.0
 language:        Python
 license:         MIT
 ```
@@ -24,7 +24,7 @@ license:         MIT
 one_sentence:    Deterministic CLI that answers "Is your repo ready for AI coding agents?"
 score_range:     0–100
 output_formats:  terminal, json, markdown
-checks:          12 deterministic file-system checks
+checks:          17 deterministic file-system checks
 critical_layer:  true
 llm_calls:       none
 network_calls:   none
@@ -116,7 +116,7 @@ secret-pattern finding.
 
 ```
 agent_readiness/
-  checks.py    → 12 check functions, each returns CheckResult TypedDict
+  checks.py    → 17 check functions, each returns CheckResult TypedDict
   scoring.py   → compute_score(), get_tier(), get_recommendations(), get_critical_failures()
   report.py    → render_terminal(), render_json(), render_markdown() with critical failure sections
   templates.py → generate_agents_md(), generate_copilot_instructions()
@@ -205,7 +205,7 @@ python -m pytest -q
 all_pass:   100.0
 all_fail:   0.0
 all_warn:   50.0
-total_weight: 27
+total_weight: 36
 critical_score_effect: none (visibility layer only)
 tiers:
   GREEN:   85–100
@@ -229,4 +229,4 @@ tiers:
 ---
 
 *This file is updated with each significant version change.*
-*Last updated: 2026-05-20 — v0.2.0*
+*Last updated: 2026-05-21 — v0.3.0*

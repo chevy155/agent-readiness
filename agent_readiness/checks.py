@@ -1,6 +1,6 @@
 """Deterministic checks for AI agent readiness.
 
-12 checks — no network calls, no LLM calls, no telemetry.
+17 checks — no network calls, no LLM calls, no telemetry.
 Each check inspects the file system only.
 """
 
@@ -54,6 +54,48 @@ _SCANNABLE_SUFFIXES = {
     ".java", ".cs", ".yml", ".yaml", ".env", ".cfg", ".ini",
     ".toml", ".sh", ".bash", ".zsh", ".fish",
 }
+
+_HANDOFF_DOC_CANDIDATES = [
+    "CURRENT_STATE.md",
+    "HANDOFF.md",
+    "SESSION_NOTES.md",
+    "RUNBOOK.md",
+    "docs/CURRENT_STATE.md",
+    "docs/HANDOFF.md",
+]
+
+_ENV_EXAMPLE_NAMES = {".env.example", ".env.sample", ".env.template", ".env.dist"}
+
+
+def _find_env_like_files(root: Path) -> list[Path]:
+    return [
+        f
+        for f in root.glob(".env*")
+        if f.is_file() and f.name not in _ENV_EXAMPLE_NAMES
+    ]
+
+
+def _gitignore_has_env_pattern(root: Path) -> bool:
+    gitignore = root / ".gitignore"
+    if not gitignore.exists():
+        return False
+
+    content = gitignore.read_text(errors="replace")
+    for raw_line in content.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+
+        if line in {".env", ".env.*", "*.env", "**/.env", "**/.env*"}:
+            return True
+
+        if line.startswith(".env") and line not in _ENV_EXAMPLE_NAMES:
+            return True
+
+        if "/.env" in line:
+            return True
+
+    return False
 
 
 # ---------------------------------------------------------------------------
@@ -367,11 +409,7 @@ def check_run_command(root: Path) -> CheckResult:
 # ---------------------------------------------------------------------------
 
 def check_env_example(root: Path) -> CheckResult:
-    example_names = {".env.example", ".env.sample", ".env.template", ".env.dist"}
-    env_like = [
-        f for f in root.glob(".env*")
-        if f.name not in example_names and f.is_file()
-    ]
+    env_like = _find_env_like_files(root)
 
     if not env_like:
         return CheckResult(
@@ -384,7 +422,7 @@ def check_env_example(root: Path) -> CheckResult:
             recommendation="",
         )
 
-    for name in example_names:
+    for name in _ENV_EXAMPLE_NAMES:
         if (root / name).exists():
             return CheckResult(
                 id="env_example",
@@ -425,19 +463,16 @@ def check_no_env_committed(root: Path) -> CheckResult:
             recommendation="Remove .env from the repo immediately and add it to .gitignore.",
         )
 
-    gitignore = root / ".gitignore"
-    if gitignore.exists():
-        content = gitignore.read_text(errors="replace")
-        if re.search(r"^\.env$", content, re.MULTILINE) or ".env\n" in content or ".env " in content:
-            return CheckResult(
-                id="no_env_committed",
-                name="No .env file committed",
-                description="A committed .env file exposes secrets to agents and version control",
-                weight=3,
-                status="pass",
-                evidence=".env not present; .gitignore includes .env pattern",
-                recommendation="",
-            )
+    if _gitignore_has_env_pattern(root):
+        return CheckResult(
+            id="no_env_committed",
+            name="No .env file committed",
+            description="A committed .env file exposes secrets to agents and version control",
+            weight=3,
+            status="pass",
+            evidence=".env not present; .gitignore includes .env pattern",
+            recommendation="",
+        )
 
     return CheckResult(
         id="no_env_committed",
@@ -451,7 +486,266 @@ def check_no_env_committed(root: Path) -> CheckResult:
 
 
 # ---------------------------------------------------------------------------
-# Check 10 — README.md present and substantive
+# Check 10 — Cursor rules present
+# ---------------------------------------------------------------------------
+
+def check_cursor_rules(root: Path) -> CheckResult:
+    cursor_rules_file = root / ".cursorrules"
+    if cursor_rules_file.exists():
+        size = cursor_rules_file.stat().st_size
+        if size > 50:
+            return CheckResult(
+                id="cursor_rules",
+                name="Cursor rules present",
+                description="Cursor rules define local AI-agent behavior and boundaries",
+                weight=2,
+                status="pass",
+                evidence=f"Found .cursorrules ({size} bytes)",
+                recommendation="",
+            )
+        return CheckResult(
+            id="cursor_rules",
+            name="Cursor rules present",
+            description="Cursor rules define local AI-agent behavior and boundaries",
+            weight=2,
+            status="warn",
+            evidence="Found .cursorrules but it is nearly empty",
+            recommendation="Expand .cursorrules with concrete scope and safety guidance.",
+        )
+
+    rules_dir = root / ".cursor" / "rules"
+    if rules_dir.exists() and rules_dir.is_dir():
+        rule_files = (
+            list(rules_dir.glob("*.mdc"))
+            + list(rules_dir.glob("*.md"))
+            + list(rules_dir.glob("*.txt"))
+        )
+        if rule_files:
+            return CheckResult(
+                id="cursor_rules",
+                name="Cursor rules present",
+                description="Cursor rules define local AI-agent behavior and boundaries",
+                weight=2,
+                status="pass",
+                evidence=f"Found {len(rule_files)} file(s) in .cursor/rules/",
+                recommendation="",
+            )
+
+    return CheckResult(
+        id="cursor_rules",
+        name="Cursor rules present",
+        description="Cursor rules define local AI-agent behavior and boundaries",
+        weight=2,
+        status="fail",
+        evidence="No .cursorrules or .cursor/rules/* file found",
+        recommendation="Add .cursorrules or .cursor/rules/ with project-specific agent constraints.",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Check 11 — Workspace handoff doc present
+# ---------------------------------------------------------------------------
+
+def check_workspace_handoff_present(root: Path) -> CheckResult:
+    found = [p for p in _HANDOFF_DOC_CANDIDATES if (root / p).exists()]
+    if found:
+        sample = ", ".join(found[:3])
+        return CheckResult(
+            id="workspace_handoff",
+            name="Workspace handoff/current-state doc present",
+            description="Handoff docs reduce re-discovery and drift across agent sessions",
+            weight=2,
+            status="pass",
+            evidence=f"Found handoff/current-state doc(s): {sample}",
+            recommendation="",
+        )
+
+    return CheckResult(
+        id="workspace_handoff",
+        name="Workspace handoff/current-state doc present",
+        description="Handoff docs reduce re-discovery and drift across agent sessions",
+        weight=2,
+        status="fail",
+        evidence="No CURRENT_STATE/HANDOFF/session notes doc found in root or docs/",
+        recommendation="Add CURRENT_STATE.md or HANDOFF.md summarizing active state and next steps.",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Check 12 — Test command explicit
+# ---------------------------------------------------------------------------
+
+def check_test_command_explicit(root: Path) -> CheckResult:
+    makefile = root / "Makefile"
+    if makefile.exists():
+        content = makefile.read_text(errors="replace")
+        if re.search(r"^test\s*:", content, re.MULTILINE):
+            return CheckResult(
+                id="test_command_explicit",
+                name="Test command explicit",
+                description="Agent workspaces need an explicit test command that can be run safely",
+                weight=2,
+                status="pass",
+                evidence="Found Makefile with explicit `test` target",
+                recommendation="",
+            )
+
+    for jf in ("justfile", "Justfile"):
+        p = root / jf
+        if p.exists():
+            content = p.read_text(errors="replace")
+            if re.search(r"^test\s*:", content, re.MULTILINE):
+                return CheckResult(
+                    id="test_command_explicit",
+                    name="Test command explicit",
+                    description="Agent workspaces need an explicit test command that can be run safely",
+                    weight=2,
+                    status="pass",
+                    evidence=f"Found {jf} with explicit `test` recipe",
+                    recommendation="",
+                )
+
+    pkg = root / "package.json"
+    if pkg.exists():
+        try:
+            data = json.loads(pkg.read_text(errors="replace"))
+            scripts = data.get("scripts", {})
+            if "test" in scripts and str(scripts["test"]).strip():
+                return CheckResult(
+                    id="test_command_explicit",
+                    name="Test command explicit",
+                    description="Agent workspaces need an explicit test command that can be run safely",
+                    weight=2,
+                    status="pass",
+                    evidence="Found package.json scripts.test",
+                    recommendation="",
+                )
+        except (json.JSONDecodeError, Exception):
+            pass
+
+    pyproject = root / "pyproject.toml"
+    if pyproject.exists():
+        content = pyproject.read_text(errors="replace")
+        if "[tool.pytest" in content:
+            return CheckResult(
+                id="test_command_explicit",
+                name="Test command explicit",
+                description="Agent workspaces need an explicit test command that can be run safely",
+                weight=2,
+                status="pass",
+                evidence="Found pyproject.toml with pytest configuration",
+                recommendation="",
+            )
+
+    return CheckResult(
+        id="test_command_explicit",
+        name="Test command explicit",
+        description="Agent workspaces need an explicit test command that can be run safely",
+        weight=2,
+        status="fail",
+        evidence="No explicit test command found in Makefile/justfile/package.json/pyproject.toml",
+        recommendation="Add an explicit test command (for example `pytest -q` or `npm test`) in project config.",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Check 13 — Env contract pairing
+# ---------------------------------------------------------------------------
+
+def check_env_contract_pairing(root: Path) -> CheckResult:
+    env_like = _find_env_like_files(root)
+    if not env_like:
+        return CheckResult(
+            id="env_contract_pairing",
+            name="Env contract pairing",
+            description="If .env-like files exist, .gitignore and example templates must both be in place",
+            weight=2,
+            status="pass",
+            evidence="No .env-like runtime files detected — check not applicable",
+            recommendation="",
+        )
+
+    if not _gitignore_has_env_pattern(root):
+        sample = ", ".join(f.name for f in env_like[:3])
+        return CheckResult(
+            id="env_contract_pairing",
+            name="Env contract pairing",
+            description="If .env-like files exist, .gitignore and example templates must both be in place",
+            weight=2,
+            status="fail",
+            evidence=f".env-like file(s) found ({sample}) but .gitignore does not protect .env patterns",
+            recommendation="Add `.env` (or `.env.*`) to .gitignore before agent edits continue.",
+        )
+
+    has_example = any((root / name).exists() for name in _ENV_EXAMPLE_NAMES)
+    if not has_example:
+        sample = ", ".join(f.name for f in env_like[:3])
+        return CheckResult(
+            id="env_contract_pairing",
+            name="Env contract pairing",
+            description="If .env-like files exist, .gitignore and example templates must both be in place",
+            weight=2,
+            status="warn",
+            evidence=f".env-like file(s) found ({sample}) and .gitignore is correct, but no .env.example/.sample/.template/.dist found",
+            recommendation="Add an env example/template file documenting required variables with placeholder values.",
+        )
+
+    return CheckResult(
+        id="env_contract_pairing",
+        name="Env contract pairing",
+        description="If .env-like files exist, .gitignore and example templates must both be in place",
+        weight=2,
+        status="pass",
+        evidence=".env-like files detected; .gitignore protects .env and example/template file is present",
+        recommendation="",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Check 14 — Workspace handoff doc substantive
+# ---------------------------------------------------------------------------
+
+def check_workspace_handoff_substantive(root: Path) -> CheckResult:
+    existing = [root / p for p in _HANDOFF_DOC_CANDIDATES if (root / p).exists()]
+    if not existing:
+        return CheckResult(
+            id="workspace_handoff_substantive",
+            name="Workspace handoff doc substantive",
+            description="Handoff docs should contain enough context for the next agent session",
+            weight=1,
+            status="fail",
+            evidence="No handoff/current-state doc available to assess substance",
+            recommendation="Add a substantive CURRENT_STATE.md or HANDOFF.md with current state, blockers, and next actions.",
+        )
+
+    longest = max(existing, key=lambda p: p.stat().st_size)
+    size = longest.stat().st_size
+    rel = longest.relative_to(root)
+
+    if size >= 120:
+        return CheckResult(
+            id="workspace_handoff_substantive",
+            name="Workspace handoff doc substantive",
+            description="Handoff docs should contain enough context for the next agent session",
+            weight=1,
+            status="pass",
+            evidence=f"{rel} appears substantive ({size} bytes)",
+            recommendation="",
+        )
+
+    return CheckResult(
+        id="workspace_handoff_substantive",
+        name="Workspace handoff doc substantive",
+        description="Handoff docs should contain enough context for the next agent session",
+        weight=1,
+        status="warn",
+        evidence=f"{rel} exists but is too brief ({size} bytes)",
+        recommendation="Expand handoff/current-state doc with decisions made, current status, and concrete next steps.",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Check 15 — README.md present and substantive
 # ---------------------------------------------------------------------------
 
 def check_readme_quality(root: Path) -> CheckResult:
@@ -502,7 +796,7 @@ def check_readme_quality(root: Path) -> CheckResult:
 
 
 # ---------------------------------------------------------------------------
-# Check 11 — No hardcoded secret patterns
+# Check 16 — No hardcoded secret patterns
 # ---------------------------------------------------------------------------
 
 def check_no_secrets(root: Path) -> CheckResult:
@@ -564,7 +858,7 @@ def check_no_secrets(root: Path) -> CheckResult:
 
 
 # ---------------------------------------------------------------------------
-# Check 12 — Agent boundary file present or inferable
+# Check 17 — Agent boundary file present or inferable
 # ---------------------------------------------------------------------------
 
 def check_agent_boundary(root: Path) -> CheckResult:
@@ -647,6 +941,11 @@ _ALL_CHECKS = [
     check_run_command,
     check_env_example,
     check_no_env_committed,
+    check_cursor_rules,
+    check_workspace_handoff_present,
+    check_test_command_explicit,
+    check_env_contract_pairing,
+    check_workspace_handoff_substantive,
     check_readme_quality,
     check_no_secrets,
     check_agent_boundary,
@@ -654,5 +953,5 @@ _ALL_CHECKS = [
 
 
 def run_all_checks(repo_path: Path) -> list[CheckResult]:
-    """Run all 12 checks against the given repo path."""
+    """Run all 17 checks against the given repo path."""
     return [check(repo_path) for check in _ALL_CHECKS]

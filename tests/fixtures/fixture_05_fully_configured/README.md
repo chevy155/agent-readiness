@@ -27,4 +27,7 @@ All pushes and pull requests run the full test suite via GitHub Actions.
 The service exposes a REST API for invoice creation and retrieval. PDF generation uses
 WeasyPrint. Email delivery uses SendGrid. All configuration is environment-variable-driven.
 
-Agents working in this repo should read AGENTS.md before making changes.
+## Agent Workspace Notes
+
+Agent sessions must follow `AGENTS.md`, `.cursorrules`, and `CURRENT_STATE.md` before edits.
+Use the repo handoff notes to continue prior work without re-discovering architecture decisions.

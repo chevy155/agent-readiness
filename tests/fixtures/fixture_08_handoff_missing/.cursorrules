@@ -1,0 +1,3 @@
+Keep edits narrowly scoped.
+Run tests before and after code changes.
+Do not touch secret files.

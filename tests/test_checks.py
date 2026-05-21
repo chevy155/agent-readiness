@@ -15,6 +15,8 @@ from agent_readiness.checks import (
     check_agents_md,
     check_ci_workflow,
     check_copilot_instructions,
+    check_cursor_rules,
+    check_env_contract_pairing,
     check_env_example,
     check_issue_templates,
     check_no_env_committed,
@@ -22,7 +24,10 @@ from agent_readiness.checks import (
     check_pr_template,
     check_readme_quality,
     check_run_command,
+    check_test_command_explicit,
     check_test_directory,
+    check_workspace_handoff_present,
+    check_workspace_handoff_substantive,
     run_all_checks,
 )
 
@@ -366,13 +371,130 @@ class TestRunCommand:
 
 
 # ---------------------------------------------------------------------------
+# check_cursor_rules
+# ---------------------------------------------------------------------------
+
+class TestCursorRules:
+    def test_missing_returns_fail(self, tmp_path: Path) -> None:
+        result = check_cursor_rules(tmp_path)
+        assert result["status"] == "fail"
+
+    def test_cursorrules_substantive_returns_pass(self, tmp_path: Path) -> None:
+        (tmp_path / ".cursorrules").write_text("Use tests-first workflow.\nNever edit secrets.\n" * 4)
+        result = check_cursor_rules(tmp_path)
+        assert result["status"] == "pass"
+
+    def test_cursor_rules_dir_returns_pass(self, tmp_path: Path) -> None:
+        rules = tmp_path / ".cursor" / "rules"
+        rules.mkdir(parents=True)
+        (rules / "workspace.mdc").write_text("Rule content")
+        result = check_cursor_rules(tmp_path)
+        assert result["status"] == "pass"
+
+
+# ---------------------------------------------------------------------------
+# check_workspace_handoff_present
+# ---------------------------------------------------------------------------
+
+class TestWorkspaceHandoffPresent:
+    def test_missing_returns_fail(self, tmp_path: Path) -> None:
+        result = check_workspace_handoff_present(tmp_path)
+        assert result["status"] == "fail"
+
+    def test_current_state_returns_pass(self, tmp_path: Path) -> None:
+        (tmp_path / "CURRENT_STATE.md").write_text("Current status")
+        result = check_workspace_handoff_present(tmp_path)
+        assert result["status"] == "pass"
+
+    def test_docs_handoff_returns_pass(self, tmp_path: Path) -> None:
+        p = tmp_path / "docs"
+        p.mkdir()
+        (p / "HANDOFF.md").write_text("handoff")
+        result = check_workspace_handoff_present(tmp_path)
+        assert result["status"] == "pass"
+
+
+# ---------------------------------------------------------------------------
+# check_test_command_explicit
+# ---------------------------------------------------------------------------
+
+class TestTestCommandExplicit:
+    def test_missing_returns_fail(self, tmp_path: Path) -> None:
+        result = check_test_command_explicit(tmp_path)
+        assert result["status"] == "fail"
+
+    def test_makefile_test_target_returns_pass(self, tmp_path: Path) -> None:
+        (tmp_path / "Makefile").write_text("test:\n\tpytest -q\n")
+        result = check_test_command_explicit(tmp_path)
+        assert result["status"] == "pass"
+
+    def test_package_json_scripts_test_returns_pass(self, tmp_path: Path) -> None:
+        (tmp_path / "package.json").write_text('{"scripts": {"test": "jest"}}')
+        result = check_test_command_explicit(tmp_path)
+        assert result["status"] == "pass"
+
+    def test_pyproject_pytest_returns_pass(self, tmp_path: Path) -> None:
+        (tmp_path / "pyproject.toml").write_text("[tool.pytest.ini_options]\ntestpaths=['tests']\n")
+        result = check_test_command_explicit(tmp_path)
+        assert result["status"] == "pass"
+
+
+# ---------------------------------------------------------------------------
+# check_env_contract_pairing
+# ---------------------------------------------------------------------------
+
+class TestEnvContractPairing:
+    def test_no_env_like_returns_pass(self, tmp_path: Path) -> None:
+        result = check_env_contract_pairing(tmp_path)
+        assert result["status"] == "pass"
+
+    def test_env_like_without_gitignore_protection_returns_fail(self, tmp_path: Path) -> None:
+        (tmp_path / ".env.production").write_text("DB_URL=postgres://x")
+        result = check_env_contract_pairing(tmp_path)
+        assert result["status"] == "fail"
+
+    def test_env_like_with_gitignore_but_no_example_returns_warn(self, tmp_path: Path) -> None:
+        (tmp_path / ".env.local").write_text("X=1")
+        (tmp_path / ".gitignore").write_text(".env\n")
+        result = check_env_contract_pairing(tmp_path)
+        assert result["status"] == "warn"
+
+    def test_env_like_with_gitignore_and_example_returns_pass(self, tmp_path: Path) -> None:
+        (tmp_path / ".env.staging").write_text("X=1")
+        (tmp_path / ".gitignore").write_text(".env\n")
+        (tmp_path / ".env.example").write_text("X=placeholder")
+        result = check_env_contract_pairing(tmp_path)
+        assert result["status"] == "pass"
+
+
+# ---------------------------------------------------------------------------
+# check_workspace_handoff_substantive
+# ---------------------------------------------------------------------------
+
+class TestWorkspaceHandoffSubstantive:
+    def test_missing_returns_fail(self, tmp_path: Path) -> None:
+        result = check_workspace_handoff_substantive(tmp_path)
+        assert result["status"] == "fail"
+
+    def test_short_doc_returns_warn(self, tmp_path: Path) -> None:
+        (tmp_path / "CURRENT_STATE.md").write_text("tiny")
+        result = check_workspace_handoff_substantive(tmp_path)
+        assert result["status"] == "warn"
+
+    def test_substantive_doc_returns_pass(self, tmp_path: Path) -> None:
+        (tmp_path / "CURRENT_STATE.md").write_text("status\n" * 40)
+        result = check_workspace_handoff_substantive(tmp_path)
+        assert result["status"] == "pass"
+
+
+# ---------------------------------------------------------------------------
 # run_all_checks integration
 # ---------------------------------------------------------------------------
 
 class TestRunAllChecks:
-    def test_returns_12_results(self, tmp_path: Path) -> None:
+    def test_returns_17_results(self, tmp_path: Path) -> None:
         results = run_all_checks(tmp_path)
-        assert len(results) == 12
+        assert len(results) == 17
 
     def test_all_results_have_required_fields(self, tmp_path: Path) -> None:
         results = run_all_checks(tmp_path)

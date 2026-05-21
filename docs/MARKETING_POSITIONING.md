@@ -60,7 +60,7 @@ It reframes a familiar problem (messy repo) through a new lens (agent readiness)
 
 ## Core Rational Hook
 
-- 12 deterministic checks
+- 17 deterministic checks
 - 0–100 score
 - Results in under 3 seconds
 - CI-ready (`--fail-under 70`)
@@ -155,7 +155,7 @@ These modules extend the same category (agent governance) without contradicting 
 | Comparison | Our position |
 |---|---|
 | vs. linters (ESLint, flake8) | They check code quality. We check repo structure for AI agents. |
-| vs. security scanners (truffleHog, gitleaks) | They scan for leaked secrets comprehensively. We flag obvious patterns as one of 12 checks. |
+| vs. security scanners (truffleHog, gitleaks) | They scan for leaked secrets comprehensively. We flag obvious patterns as one of 17 checks. |
 | vs. Claude/Cursor/Copilot/Codex | They are agent workers. We inspect the runway before they work. |
 | vs. GitHub Copilot itself | Copilot is the agent. We make repos ready for the agent. |
 | vs. OpenAI Codex | Same as Copilot — we're the preparation layer, not the agent. |
@@ -181,7 +181,7 @@ See [`docs/LAUNCH_LOG.md`](LAUNCH_LOG.md) for the full launch event record.
 
 ```
 Product name:    Agent Readiness Scanner
-Version:         v0.2.0
+Version:         v0.3.0
 Tagline:         Agents are powerful, but they need a runway. This tool checks the runway.
 One-liner:       Deterministic CLI that gives your repo a 0–100 agent readiness score and surfaces critical failures.
 Trust signals:   no LLM calls, no telemetry, no SaaS, no account, MIT license

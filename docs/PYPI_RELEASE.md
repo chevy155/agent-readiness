@@ -1,6 +1,6 @@
 # PyPI Release Guide — Agent Readiness Scanner
 
-This is the canonical step-by-step guide for publishing `agent-readiness` to PyPI.
+This is the canonical step-by-step guide for publishing `agent-readiness-cli` to PyPI.
 
 ---
 
@@ -19,11 +19,11 @@ You need:
 
 ## Confirming Package Name
 
-The name `agent-readiness` was reserved/registered under the `chevy155` PyPI account.
+The name `agent-readiness-cli` is the publish target under the `chevy155` PyPI account.
 Confirm the name is yours before uploading:
 
 ```
-https://pypi.org/project/agent-readiness/
+https://pypi.org/project/agent-readiness-cli/
 ```
 
 If someone has already claimed it under a different account, you will get an error on first upload.
@@ -35,7 +35,7 @@ You do **not** need to pre-register the name — uploading for the first time cl
 
 Before running `twine upload`:
 
-- [ ] `pyproject.toml` version matches the release tag (e.g. `0.2.0`)
+- [ ] `pyproject.toml` version matches the release tag (e.g. `0.3.0`)
 - [ ] `agent_readiness/__init__.py` `__version__` matches
 - [ ] `CHANGELOG.md` has an entry for this version
 - [ ] All tests pass: `python -m pytest -q`
@@ -59,7 +59,7 @@ python -m build
 
 Expected output ends with:
 ```
-Successfully built agent_readiness-0.2.0.tar.gz and agent_readiness-0.2.0-py3-none-any.whl
+Successfully built agent_readiness_cli-0.3.0.tar.gz and agent_readiness_cli-0.3.0-py3-none-any.whl
 ```
 
 ---
@@ -73,15 +73,15 @@ python -m twine check dist/*
 
 Expected:
 ```
-Checking dist/agent_readiness-0.2.0-py3-none-any.whl: PASSED
-Checking dist/agent_readiness-0.2.0.tar.gz: PASSED
+Checking dist/agent_readiness_cli-0.3.0-py3-none-any.whl: PASSED
+Checking dist/agent_readiness_cli-0.3.0.tar.gz: PASSED
 ```
 
 ### Clean-venv test (optional but recommended)
 
 ```bash
 python -m venv .venv-test
-.venv-test/bin/pip install dist/agent_readiness-0.2.0-py3-none-any.whl
+.venv-test/bin/pip install dist/agent_readiness_cli-0.3.0-py3-none-any.whl
 
 # Verify entry point
 .venv-test/bin/agent-scan --version
@@ -91,7 +91,7 @@ python -m venv .venv-test
 rm -rf .venv-test
 ```
 
-Expected: `agent-scan 0.2.0` and a `100/100 GREEN` self-scan.
+Expected: `agent-scan 0.3.0` and a `100/100 GREEN` self-scan.
 
 ---
 
@@ -105,12 +105,12 @@ python -m twine upload --repository testpypi dist/*
 
 Confirm the package renders correctly at:
 ```
-https://test.pypi.org/project/agent-readiness/
+https://test.pypi.org/project/agent-readiness-cli/
 ```
 
 Then test install from TestPyPI:
 ```bash
-pip install --index-url https://test.pypi.org/simple/ agent-readiness
+pip install --index-url https://test.pypi.org/simple/ agent-readiness-cli
 agent-scan --version
 ```
 
@@ -137,12 +137,12 @@ python -m twine upload dist/*
 
 Confirm the live page:
 ```
-https://pypi.org/project/agent-readiness/
+https://pypi.org/project/agent-readiness-cli/
 ```
 
 Test the live install:
 ```bash
-pip install agent-readiness
+pip install agent-readiness-cli
 agent-scan --version
 agent-scan . --output terminal --no-color
 ```
@@ -166,7 +166,7 @@ gh release create v0.3.0 \
 
 After successful PyPI publish:
 
-- `README.md` hero install block already shows `pip install agent-readiness` (no changes needed)
+- `README.md` hero install block should show `pip install agent-readiness-cli`
 - `docs/LAUNCH_POSTS.md` — update any remaining `git clone` install blocks
 - `CHANGELOG.md` — add entry noting PyPI availability
 
@@ -217,7 +217,7 @@ This uses OIDC trusted publishing — no API token needed in secrets.
 |---|---|
 | `pyproject.toml` metadata | Complete |
 | `README.md` renders on PyPI | Verified (twine check PASSED) |
-| `dist/` artifacts built | `agent_readiness-0.2.0.tar.gz` + `.whl` |
+| `dist/` artifacts built | `agent_readiness_cli-0.3.0.tar.gz` + `.whl` |
 | `twine check` | PASSED |
 | Clean-venv install | PASSED — `100/100 GREEN` |
-| PyPI upload | Pending — awaiting operator decision |
+| PyPI upload | Pending — blocked on original name ownership; repointed to `agent-readiness-cli` |

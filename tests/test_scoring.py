@@ -209,8 +209,8 @@ class TestGetCriticalFailures:
 # ---------------------------------------------------------------------------
 
 class TestScoreIntegration:
-    def test_all_27_weight_pass_yields_100(self) -> None:
-        """Total weight across all 12 checks is 27. All pass → 100."""
+    def test_all_36_weight_pass_yields_100(self) -> None:
+        """Total weight across all 17 checks is 36. All pass → 100."""
         from agent_readiness.checks import run_all_checks
         from pathlib import Path
         import tempfile, os
@@ -232,6 +232,10 @@ class TestScoreIntegration:
             (root / "Makefile").write_text("test:\n\tpytest -q\n")
             (root / ".gitignore").write_text(".env\n.venv\n")
             (root / "CODEOWNERS").write_text("* @owner\n")
+            (root / ".cursorrules").write_text("Use tests-first.\nNo secrets in repo.\n" * 4)
+            (root / "CURRENT_STATE.md").write_text("Current status and next steps.\n" * 10)
+            (root / ".env.example").write_text("DB_URL=placeholder\n")
+            (root / ".env.production").write_text("DB_URL=postgres://example\n")
 
             results = run_all_checks(root)
             score = compute_score(results)

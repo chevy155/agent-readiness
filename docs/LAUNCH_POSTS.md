@@ -45,7 +45,7 @@ Most repos work fine for developers but are under-specified for AI agents. Missi
 
 When you point an agent at a repo like that, it burns tokens, makes bad guesses, and breaks things.
 
-**Agent Readiness Scanner** runs 12 deterministic checks and gives your repo a 0–100 readiness score in under 3 seconds. It can also generate starter AGENTS.md and Copilot instruction files.
+**Agent Readiness Scanner** runs 17 deterministic checks and gives your repo a 0–100 readiness score in under 3 seconds. It can also generate starter AGENTS.md and Copilot instruction files.
 
 No LLM calls.
 No telemetry.
@@ -73,7 +73,7 @@ Humans can infer missing context. Agents cannot.
 It gives your repo a 0–100 score: does it have AGENTS.md, CI, tests, run commands, PR templates, and safe .env handling?
 
 ```
-pip install agent-readiness
+pip install agent-readiness-cli
 agent-scan .
 ```
 
@@ -106,7 +106,7 @@ When you hand a repo to an AI coding agent (Cursor, Copilot, Claude Code, Codex)
 Without this: token waste, bad changes.
 
 **3/**
-Agent Readiness Scanner runs 12 checks and produces a 0–100 score:
+Agent Readiness Scanner runs 17 checks and produces a 0–100 score:
 
 ```
 Score  : 83 / 100
@@ -122,7 +122,7 @@ No SaaS.
 No account.
 
 ```
-pip install agent-readiness
+pip install agent-readiness-cli
 agent-scan .
 ```
 
@@ -155,9 +155,10 @@ This tool gives a repo a 0–100 readiness score using deterministic checks.
 
 No LLM calls. No telemetry. No SaaS. No account required.
 
-Current v0.1.0 checks 12 signals: AGENTS.md, Copilot instructions, CI workflows,
+Current v0.3 checks 17 signals: AGENTS.md, Copilot instructions, CI workflows,
 tests, run commands, README quality, PR templates, issue templates, basic
-secret-pattern hygiene, .env handling, agent boundaries, and governance structure.
+secret-pattern hygiene, .env handling, Cursor rules, workspace handoff continuity,
+explicit test command signals, env contract pairing, and agent boundaries.
 
 It can also generate starter AGENTS.md and GitHub Copilot instruction files.
 
@@ -176,12 +177,12 @@ deterministic way to know whether the repo gives them enough structure to work s
 
 **[Tool] Agent Readiness Scanner — check if your repo is structured enough for AI coding agents**
 
-Built a small open-source CLI that runs 12 static checks on a repo and tells you whether it's ready for local AI coding agents (Cursor, Claude Code, local Codex, anything using your repo as context).
+Built a small open-source CLI that runs 17 static checks on a repo and tells you whether it's ready for local AI coding agents (Cursor, Claude Code, local Codex, anything using your repo as context).
 
 The focus: repos that work for local agents specifically — AGENTS.md, .env hygiene, documented test commands, CI, PR templates.
 
 ```bash
-pip install agent-readiness
+pip install agent-readiness-cli
 agent-scan .
 ```
 
@@ -218,7 +219,7 @@ Score is 0–100. Add to CI:
 ```yaml
 - name: Check agent readiness
   run: |
-    pip install agent-readiness
+    pip install agent-readiness-cli
     agent-scan . --fail-under 70
 ```
 
@@ -240,7 +241,7 @@ But for an agent: no AGENTS.md, no run command documented, a half-committed .env
 
 So I built Agent Readiness Scanner.
 
-It runs 12 deterministic checks. No LLM. No telemetry. Under 3 seconds. Gives a 0–100 score. Can generate the missing files automatically.
+It runs 17 deterministic checks. No LLM. No telemetry. Under 3 seconds. Gives a 0–100 score. Can generate the missing files automatically.
 
 The result is a repo your agents can actually work in.
 
@@ -254,9 +255,9 @@ https://github.com/chevy155/agent-readiness
 
 **Agent Readiness Scanner: implementation notes**
 
-The scanner runs 12 file-system checks implemented in pure Python stdlib — no external dependencies. Each check returns a `TypedDict` with `status` (pass/warn/fail), `weight`, and `recommendation`. Score is `sum(earned_weight) / 27 * 100`.
+The scanner runs 17 file-system checks implemented in pure Python stdlib — no external dependencies. Each check returns a `TypedDict` with `status` (pass/warn/fail), `weight`, and `recommendation`. Score is `sum(earned_weight) / 36 * 100`.
 
-The 12 checks were chosen because they are:
+The 17 checks were chosen because they are:
 
 1. **Binary** — either present or not, deterministic every run
 2. **Actionable** — each miss maps to a specific fix
@@ -288,7 +289,7 @@ A developer can look at a messy repo and build a mental model of what runs, what
 
 An AI coding agent cannot. It operates on what is present. Missing AGENTS.md means no scope boundaries. Missing test suite means no feedback loop. Missing run commands means no way to verify. Missing .env hygiene means potential secret exposure. The agent does its best with incomplete information, and that best is often wrong.
 
-**Agent Readiness Scanner** checks whether a repo gives agents the structure they need to act safely. 12 deterministic checks. 0–100 score. No LLM calls. No telemetry.
+**Agent Readiness Scanner** checks whether a repo gives agents the structure they need to act safely. 17 deterministic checks. 0–100 score. No LLM calls. No telemetry.
 
 Structure before autonomy.
 
