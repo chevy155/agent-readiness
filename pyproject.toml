@@ -1,20 +1,34 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-readiness"
 version = "0.2.0"
 description = "Deterministic CLI that scans a repository for AI coding agent readiness"
-readme = "README.md"
-license = { text = "MIT" }
+readme = { file = "README.md", content-type = "text/markdown" }
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.9"
-keywords = ["ai-agents", "github", "cursor", "copilot", "claude", "devtools"]
+authors = [{ name = "chevy155" }]
+keywords = [
+    "ai-agents",
+    "agent-readiness",
+    "agents-md",
+    "cursor",
+    "copilot",
+    "claude",
+    "codex",
+    "devtools",
+    "repo-governance",
+    "deterministic",
+]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -22,6 +36,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Quality Assurance",
     "Topic :: Software Development :: Testing",
+    "Topic :: Utilities",
 ]
 # Zero runtime dependencies — stdlib only
 dependencies = []
@@ -34,7 +49,10 @@ agent-scan = "agent_readiness.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/chevy155/agent-readiness"
+Source = "https://github.com/chevy155/agent-readiness"
 Issues = "https://github.com/chevy155/agent-readiness/issues"
+Changelog = "https://github.com/chevy155/agent-readiness/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/chevy155/agent-readiness#readme"
 
 [tool.setuptools.packages.find]
 where = ["."]

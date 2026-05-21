@@ -73,9 +73,7 @@ Humans can infer missing context. Agents cannot.
 It gives your repo a 0–100 score: does it have AGENTS.md, CI, tests, run commands, PR templates, and safe .env handling?
 
 ```
-git clone https://github.com/chevy155/agent-readiness.git
-cd agent-readiness
-pip install -e .
+pip install agent-readiness
 agent-scan .
 ```
 
@@ -124,9 +122,7 @@ No SaaS.
 No account.
 
 ```
-git clone https://github.com/chevy155/agent-readiness.git
-cd agent-readiness
-pip install -e .
+pip install agent-readiness
 agent-scan .
 ```
 
@@ -185,9 +181,7 @@ Built a small open-source CLI that runs 12 static checks on a repo and tells you
 The focus: repos that work for local agents specifically — AGENTS.md, .env hygiene, documented test commands, CI, PR templates.
 
 ```bash
-git clone https://github.com/chevy155/agent-readiness.git
-cd agent-readiness
-pip install -e .
+pip install agent-readiness
 agent-scan .
 ```
 
@@ -224,7 +218,7 @@ Score is 0–100. Add to CI:
 ```yaml
 - name: Check agent readiness
   run: |
-    pip install git+https://github.com/chevy155/agent-readiness.git
+    pip install agent-readiness
     agent-scan . --fail-under 70
 ```
 

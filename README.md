@@ -3,8 +3,9 @@
 **The deterministic runway check before AI coding agents touch your repo.**
 
 [![CI](https://github.com/chevy155/agent-readiness/actions/workflows/test.yml/badge.svg)](https://github.com/chevy155/agent-readiness/actions/workflows/test.yml)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](pyproject.toml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://github.com/chevy155/agent-readiness/blob/main/pyproject.toml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/chevy155/agent-readiness/blob/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/agent-readiness.svg)](https://pypi.org/project/agent-readiness/)
 
 Claude, Cursor, Copilot, Codex, and local agents can help modify a repo.
 Agent Readiness Scanner tells you whether the repo is structured enough before
@@ -16,6 +17,13 @@ cannot hide inside a decent score.
 
 Output: terminal, JSON, or Markdown. Trust signal: deterministic checks, no LLM
 calls, no telemetry, no SaaS, no account.
+
+```bash
+pip install agent-readiness
+agent-scan .
+```
+
+Or install from source:
 
 ```bash
 git clone https://github.com/chevy155/agent-readiness.git
@@ -85,18 +93,16 @@ before using them:
 ## Quick Install
 
 ```bash
-git clone https://github.com/chevy155/agent-readiness.git
-cd agent-readiness
-pip install -e .
+pip install agent-readiness
 ```
 
-For development (includes pytest):
+For development (clone and install with test dependencies):
 
 ```bash
+git clone https://github.com/chevy155/agent-readiness.git
+cd agent-readiness
 pip install -e ".[dev]"
 ```
-
-> **PyPI:** `pip install agent-readiness` will work once the package is published to PyPI.
 
 ---
 
@@ -233,13 +239,11 @@ Weights sum to 27. Score = (earned weight / 27) × 100.
 ```yaml
 - name: Check agent readiness
   run: |
-    pip install git+https://github.com/chevy155/agent-readiness.git
+    pip install agent-readiness
     agent-scan . --fail-under 70
 ```
 
 This fails the job if your repo score drops below 70. Add it to any GitHub Actions workflow.
-
-> Once published to PyPI, replace with `pip install agent-readiness`.
 
 ---
 
@@ -334,7 +338,7 @@ not weaken this trust boundary.
 |---|---|
 | **v0.1** | CLI scanner, 12 checks, all output modes, file generation |
 | **v0.2 (current)** | Critical failures banner, positioning upgrade, agent preflight doctrine |
-| **next likely** | PyPI publish, GitHub Action polish, README badge, improved scoring model |
+| **next likely** | GitHub Action polish, improved scoring model, more secret patterns, config file support |
 | **future only** | GitHub App with org-level dashboard |
 | **future** | Token Burn Firewall module |
 | **future** | Repo Red Cell Bot module |
