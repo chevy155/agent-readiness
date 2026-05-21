@@ -249,6 +249,9 @@ This fails the job if your repo score drops below 70. Add it to any GitHub Actio
 agent-scan . --generate
 ```
 
+This acts as a lightweight `AGENTS.md` generator for repos that need starter
+agent instructions.
+
 Creates:
 
 - `AGENTS.md` — populated with your repo name and detected language
@@ -264,7 +267,7 @@ Creates:
 
 ```
 project:         agent-readiness
-purpose:         Deterministic CLI that scores repo readiness for AI coding agents (0–100)
+purpose:         Deterministic scanner that scores repo readiness for AI coding agents (0–100)
 primary_command: agent-scan [path]
 safe:            true
 deterministic:   true
@@ -291,6 +294,7 @@ version:         0.2.0
 **Files that matter most:**
 - `agent_readiness/checks.py` — the 12 check functions
 - `agent_readiness/scoring.py` — score math and tier mapping
+- `agent_readiness/report.py` — terminal, JSON, Markdown, and critical failure output
 - `AGENTS.md` — operational governance
 - `tests/` — full test suite
 

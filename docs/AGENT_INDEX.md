@@ -6,6 +6,9 @@ Agent Readiness Scanner
 category:
 agent preflight infrastructure
 
+search_classification:
+repo readiness, repo governance, deterministic scanner, CI gate, AGENTS.md generator
+
 primary_user:
 developers using AI coding agents
 
@@ -17,6 +20,9 @@ Determine whether a repository has enough structure, tests, CI, instructions, an
 
 primary_command:
 `agent-scan .`
+
+ci_gate:
+`agent-scan . --fail-under 70`
 
 trust_properties:
 - deterministic
@@ -34,6 +40,7 @@ outputs:
 - `AGENT_READINESS.md`
 - starter `AGENTS.md`
 - starter `copilot-instructions.md`
+- AGENTS.md generator output via `agent-scan . --generate`
 
 critical_failures:
 - committed `.env`

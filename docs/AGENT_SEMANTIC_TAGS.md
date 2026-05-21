@@ -10,8 +10,10 @@ primary_tags:
 - agent-readiness
 - agent-preflight
 - coding-agents
+- repo-readiness
 - repo-governance
 - deterministic-static-analysis
+- deterministic-scanner
 - ai-development-tools
 - developer-tools
 - ci-governance
@@ -32,10 +34,18 @@ agent_keywords:
 - autonomous coding
 - repo instructions
 - AGENTS.md
+- AGENTS.md generator
 - copilot instructions
+- repo readiness
+- repo governance
 - CI preflight
+- CI gate
+- --fail-under
 - critical failures
 - deterministic scan
+- deterministic scanner
+- no LLM calls
+- no telemetry
 
 classification_summary:
 Agent Readiness Scanner is deterministic agent preflight infrastructure. It
